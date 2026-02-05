@@ -1,6 +1,7 @@
 local jobName = nil
 local LevelJob, JobPoint, careerNextLevel = nil, nil, nil
 local isClickButton = false
+local isCurrentlyWorking = false  -- Theo dõi trạng thái công việc
 
 local openMenuSpamProtect = 0
 local function openMenu(job)
@@ -48,7 +49,8 @@ local function openMenu(job)
         CareerProgress = JobPoint,
         CareerTaxi = taxiData,
         jobs = Config.JobsMenu[jobName],
-        jobRanking = jobRanking
+        jobRanking = jobRanking,
+        isWorking = isCurrentlyWorking  -- Gửi trạng thái công việc
     })
 end
 
@@ -74,8 +76,11 @@ RegisterNUICallback('acceptJob', function(data, cb)
     local doi = promise.new()
     TriggerEvent(data.eventname, function(result)
         if result then
+            isCurrentlyWorking = true  -- Bắt đầu thành công
             doi:resolve(true)
         else
+            -- result = false nghĩa là đang làm việc rồi
+            isCurrentlyWorking = true  -- Cập nhật state vì đang làm
             doi:resolve(false)
         end
     end, data)
@@ -85,7 +90,9 @@ RegisterNUICallback('acceptJob', function(data, cb)
 end)
 
 RegisterNUICallback('cancelJob', function(data, cb)
+    isCurrentlyWorking = false  -- Cập nhật trạng thái khi kết thúc công việc
     CallTrigger(data.eventname, data.eventtype, data.eventfunction)
+    cb(true)
 end)
 
 RegisterNUICallback('upgradeJobs', function(data, cb)

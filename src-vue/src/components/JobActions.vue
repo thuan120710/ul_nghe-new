@@ -6,7 +6,7 @@
       <div class="job-icon">
         <div class="icon-circle">
           <div class="icon-bg"></div>
-          <img :src="job.image" :alt="job.name" class="job-tool-icon" />
+          <img :src="job.toolImage || job.image" :alt="job.name" class="job-tool-icon" />
         </div>
         <div class="job-name">{{ job.name }}</div>
       </div>
@@ -57,10 +57,14 @@
         </div>
       </div>
 
-      <!-- Start Job Button -->
-      <button class="btn-start-job" @click="$emit('startJob')">
+      <!-- Start/Stop Job Button -->
+      <button v-if="!job.isWorking" class="btn-start-job" @click="$emit('startJob')">
         BẮT ĐẦU CÔNG VIỆC
         <img src="/image/Primary3.png" alt="Start" class="button-icon" />
+      </button>
+      
+      <button v-else class="btn-stop-job" @click="$emit('stopJob')">
+        KẾT THÚC CÔNG VIỆC ✕
       </button>
     </div>
 
@@ -69,7 +73,7 @@
       <!-- Khối 1: Cấp độ nghề hiện tại -->
       <div class="skill-header">
         <span class="section-title">Cấp độ nghề hiện tại</span>
-        <span class="skill-level-badge">Cấp {{ job.skills?.level || 1 }}</span>
+        <span class="skill-level-badge">Level {{ job.skills?.level || 1 }}</span>
       </div>
 
       <!-- Khối 2: Tích lũy nghề và Level nhận việc -->
@@ -120,7 +124,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['startJob', 'upgradeSkill'])
+const emit = defineEmits(['startJob', 'stopJob', 'upgradeSkill'])
 
 const expPercentage = computed(() => {
   const exp = props.job.skills?.exp || 0
@@ -404,6 +408,31 @@ const levelPercentage = computed(() => {
 
 .btn-start-job:hover {
   background: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.btn-stop-job {
+  width: 407px;
+  height: 46px;
+  padding: 16px;
+  background: #ED2449;
+  border-radius: 5px;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px solid #FF0066;
+  
+}
+
+.btn-stop-job:hover {
+  background: #FF0066;
   transform: translateY(-2px);
 }
 

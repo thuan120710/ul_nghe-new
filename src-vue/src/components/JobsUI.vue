@@ -21,6 +21,7 @@
       <JobActions 
         :job="jobData"
         @startJob="$emit('startJob')"
+        @stopJob="$emit('stopJob')"
         @upgradeSkill="$emit('upgradeSkill')"
       />
 
@@ -42,7 +43,7 @@ defineProps({
   rankingData: Object
 })
 
-defineEmits(['close', 'startJob', 'upgradeSkill', 'watchVideo'])
+defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo'])
 </script>
 
 <style scoped>

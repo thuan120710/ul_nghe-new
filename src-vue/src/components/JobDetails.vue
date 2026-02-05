@@ -93,10 +93,11 @@ defineEmits(['watchVideo'])
 }
 
 .job-description {
-  width: 407px;
+  width: 426px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 255px;
 }
 
 .section-title {
@@ -106,6 +107,7 @@ defineEmits(['watchVideo'])
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  flex-shrink: 0;
 }
 
 .description-text {
@@ -119,7 +121,11 @@ defineEmits(['watchVideo'])
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
+
 
 .label {
   color: var(--FECD08, #FECD08);
@@ -212,20 +218,11 @@ defineEmits(['watchVideo'])
 }
 
 .guide-section {
-  width: 420px;
-  max-height: 140px;
+  width: 426px;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
-  overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-/* Ẩn thanh cuộn cho Chrome/Safari */
-.guide-section::-webkit-scrollbar {
-  display: none;
 }
 
 .guide-label {
@@ -235,6 +232,7 @@ defineEmits(['watchVideo'])
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  flex-shrink: 0;
 }
 
 .guide-text {
@@ -249,7 +247,12 @@ defineEmits(['watchVideo'])
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  max-height: 140px;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
+
 
 .guide-steps {
   display: flex;

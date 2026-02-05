@@ -143,6 +143,7 @@ Config.JobsMenu = {
     requiredLevel = 1,
     maxLevel = 3,
     hasLevel = true,
+    toolImage = "cuoc.png",  -- Ảnh công cụ nghề
     home = {
         title = "TRANG CHỦ",
         description = "Thợ mỏ sẽ đưa công dân nhập vai vào một anh thợ mỏ chính hiệu, tích lũy sức lao động để khai thác các loại khoáng sản quý giá từ lòng đất."..

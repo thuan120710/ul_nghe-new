@@ -7,6 +7,7 @@
       :rankingData="rankingData"
       @close="handleClose"
       @startJob="handleStartJob"
+      @stopJob="handleStopJob"
       @upgradeSkill="handleUpgradeSkill"
       @watchVideo="handleWatchVideo"
     />
@@ -27,6 +28,7 @@ import VideoModal from './components/VideoModal.vue'
 const isVisible = ref(false)
 const showVideoModal = ref(false)
 const currentVideoUrl = ref('')
+const isWorking = ref(false)
 
 const playerData = ref({
   name: 'Christiano Ronaldo',
@@ -44,7 +46,8 @@ const jobData = ref({
   skills: { level: 1, exp: 0, maxExp: 100, nextLevel: 1, maxLevel: 1, description: '' },
   rewards: [],
   tools: [],
-  hasLevel: false
+  hasLevel: false,
+  isWorking: false
 })
 
 const rankingData = ref({
@@ -72,6 +75,36 @@ const handleStartJob = () => {
         eventname: jobConfig.acceptJob.eventname,
         eventtype: jobConfig.acceptJob.eventtype
       })
+    }).then(response => response.json())
+      .then(result => {
+        if (result) {
+          // Bắt đầu công việc thành công
+          isWorking.value = true
+          jobData.value.isWorking = true
+        } else {
+          // result = false nghĩa là đang làm việc rồi
+          // Cập nhật UI để hiển thị nút KẾT THÚC
+          isWorking.value = true
+          jobData.value.isWorking = true
+        }
+      })
+  }
+}
+
+const handleStopJob = () => {
+  const jobConfig = jobData.value
+  if (jobConfig.cancelJob) {
+    fetch(`https://${GetParentResourceName()}/cancelJob`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventname: jobConfig.cancelJob.eventname,
+        eventtype: jobConfig.cancelJob.eventtype,
+        eventfunction: jobConfig.cancelJob.eventfunction
+      })
+    }).then(() => {
+      isWorking.value = false
+      jobData.value.isWorking = false
     })
   }
 }
@@ -122,12 +155,19 @@ onMounted(() => {
       console.log('Received data from game:', event.data)
       isVisible.value = true
       
+      // Nhận trạng thái từ Lua
+      if (event.data.isWorking !== undefined) {
+        isWorking.value = event.data.isWorking
+      }
+      
       // Map player data
+      console.log('Avatar URL from Lua:', event.data.avatar)
       playerData.value = {
         name: `${event.data.firstName || ''} ${event.data.lastName || ''}`.trim(),
         level: event.data.currentLevel || 1,
-        avatar: event.data.avatar || 'image/avatar.png'
+        avatar: event.data.avatar || './image/avatar.png'
       }
+      console.log('Player data:', playerData.value)
       
       // Map job data from Config.JobsMenu structure
       const jobConfig = event.data.jobs
@@ -135,6 +175,7 @@ onMounted(() => {
         jobData.value = {
           name: jobConfig.name || '',
           image: `./image/${jobConfig.home?.img || 'vesinh.png'}`,
+          toolImage: jobConfig.toolImage ? `./image/${jobConfig.toolImage}` : null,
           description: jobConfig.home?.description || '',
           videoUrl: jobConfig.guide?.videoID ? `https://www.youtube.com/embed/${jobConfig.guide.videoID}` : '',
           requirements: { 
@@ -157,7 +198,9 @@ onMounted(() => {
           tools: [],
           hasLevel: jobConfig.hasLevel || false,
           acceptJob: jobConfig.acceptJob,
-          upgradeJob: jobConfig.upgradeJob
+          upgradeJob: jobConfig.upgradeJob,
+          cancelJob: jobConfig.cancelJob,
+          isWorking: isWorking.value  // Sử dụng state từ Lua
         }
       }
       
