@@ -1,0 +1,247 @@
+<template>
+  <div class="app-container">
+    <JobsUI 
+      v-if="isVisible"
+      :playerData="playerData"
+      :jobData="jobData"
+      :rankingData="rankingData"
+      @close="handleClose"
+      @startJob="handleStartJob"
+      @upgradeSkill="handleUpgradeSkill"
+      @watchVideo="handleWatchVideo"
+    />
+    
+    <VideoModal 
+      :isVisible="showVideoModal"
+      :videoUrl="currentVideoUrl"
+      @close="handleCloseVideo"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import JobsUI from './components/JobsUI.vue'
+import VideoModal from './components/VideoModal.vue'
+
+const isVisible = ref(false)
+const showVideoModal = ref(false)
+const currentVideoUrl = ref('')
+
+const playerData = ref({
+  name: 'Christiano Ronaldo',
+  level: 5,
+  avatar: './image/avatar.png'
+})
+
+const jobData = ref({
+  name: 'VỆ SINH',
+  image: 'image/vesinh.png',
+  description: 'Đang tải...',
+  videoUrl: '',
+  requirements: { level: 1, exp: 0 },
+  guide: { title: 'HƯỚNG DẪN', description: '', steps: [] },
+  skills: { level: 1, exp: 0, maxExp: 100, nextLevel: 1, maxLevel: 1, description: '' },
+  rewards: [],
+  tools: [],
+  hasLevel: false
+})
+
+const rankingData = ref({
+  title: 'BẢNG XẾP HẠNG NGHỀ',
+  videoUrl: 'image/Comp1.mp4',
+  ranks: []
+})
+
+const handleClose = () => {
+  isVisible.value = false
+  fetch(`https://${GetParentResourceName()}/closeMenu`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({})
+  })
+}
+
+const handleStartJob = () => {
+  const jobConfig = jobData.value
+  if (jobConfig.acceptJob) {
+    fetch(`https://${GetParentResourceName()}/acceptJob`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventname: jobConfig.acceptJob.eventname,
+        eventtype: jobConfig.acceptJob.eventtype
+      })
+    })
+  }
+}
+
+const handleUpgradeSkill = () => {
+  const jobConfig = jobData.value
+  if (jobConfig.upgradeJob && jobConfig.upgradeJob.eventname) {
+    fetch(`https://${GetParentResourceName()}/upgradeJobs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventname: jobConfig.upgradeJob.eventname,
+        eventtype: jobConfig.upgradeJob.eventtype
+      })
+    }).then(response => response.json())
+      .then(result => {
+        if (result.ketqua) {
+          // Update job data with new values
+          if (result.LevelJob) jobData.value.skills.level = result.LevelJob
+          if (result.JobPoint) jobData.value.skills.exp = result.JobPoint
+          if (result.careerNextLevel) jobData.value.skills.maxExp = result.careerNextLevel
+        }
+      })
+  }
+}
+
+const handleWatchVideo = () => {
+  if (jobData.value.videoUrl) {
+    currentVideoUrl.value = jobData.value.videoUrl
+    showVideoModal.value = true
+  }
+}
+
+const handleCloseVideo = () => {
+  showVideoModal.value = false
+  currentVideoUrl.value = ''
+}
+
+const GetParentResourceName = () => {
+  return window.location.hostname === 'localhost' ? 'f17-jobs' : window.GetParentResourceName()
+}
+
+onMounted(() => {
+  window.addEventListener('message', (event) => {
+    const { action } = event.data
+    
+    if (action === 'show') {
+      console.log('Received data from game:', event.data)
+      isVisible.value = true
+      
+      // Map player data
+      playerData.value = {
+        name: `${event.data.firstName || ''} ${event.data.lastName || ''}`.trim(),
+        level: event.data.currentLevel || 1,
+        avatar: event.data.avatar || 'image/avatar.png'
+      }
+      
+      // Map job data from Config.JobsMenu structure
+      const jobConfig = event.data.jobs
+      if (jobConfig) {
+        jobData.value = {
+          name: jobConfig.name || '',
+          image: `./image/${jobConfig.home?.img || 'vesinh.png'}`,
+          description: jobConfig.home?.description || '',
+          videoUrl: jobConfig.guide?.videoID ? `https://www.youtube.com/embed/${jobConfig.guide.videoID}` : '',
+          requirements: { 
+            level: jobConfig.requiredLevel || 1, 
+            exp: 0 
+          },
+          guide: { 
+            title: jobConfig.guide?.title || 'HƯỚNG DẪN', 
+            description: jobConfig.guide?.description || '' 
+          },
+          skills: { 
+            level: event.data.CareerLevel || 1, 
+            exp: event.data.CareerProgress || 0, 
+            maxExp: event.data.CareerNextLevel || 100,
+            nextLevel: jobConfig.requiredLevel || 1,
+            maxLevel: jobConfig.maxLevel || 1,
+            description: jobConfig.careerLevel?.name ? `Nâng cấp nghề ${jobConfig.careerLevel.name} để mở khóa thêm nhiều tính năng và tăng thu nhập.` : ''
+          },
+          rewards: [],
+          tools: [],
+          hasLevel: jobConfig.hasLevel || false,
+          acceptJob: jobConfig.acceptJob,
+          upgradeJob: jobConfig.upgradeJob
+        }
+      }
+      
+      // Map ranking data
+      const jobImagePath = jobConfig?.home?.img ? `./image/${jobConfig.home.img}` : './image/vesinh.png'
+      if (event.data.jobRanking && Array.isArray(event.data.jobRanking)) {
+        rankingData.value = {
+          title: 'BẢNG XẾP HẠNG NGHỀ',
+          jobImage: jobImagePath,
+          videoUrl: './image/Comp1.mp4',
+          ranks: event.data.jobRanking.map((player, index) => ({
+            position: index + 1,
+            name: player.name || 'Unknown',
+            level: player.level || 'N/A',
+            phone: player.count || 0
+          }))
+        }
+      } else {
+        // Default empty ranking
+        rankingData.value = {
+          title: 'BẢNG XẾP HẠNG NGHỀ',
+          jobImage: jobImagePath,
+          videoUrl: './image/Comp1.mp4',
+          ranks: []
+        }
+      }
+    } else if (action === 'hideUI') {
+      isVisible.value = false
+    }
+  })
+
+  // ESC key to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isVisible.value) {
+      handleClose()
+    }
+  })
+})
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+body {
+  font-family: 'Baloo 2', sans-serif;
+  overflow: hidden;
+}
+
+/* Loại bỏ hiệu ứng gạch chân và bôi đen */
+ul, li, a, button, div, span {
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+ul, li {
+  list-style: none;
+}
+
+/* Loại bỏ hiệu ứng bôi đen khi click và hover */
+*:focus {
+  outline: none !important;
+}
+
+*::selection {
+  background: transparent !important;
+}
+
+*::-moz-selection {
+  background: transparent !important;
+}
+
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
