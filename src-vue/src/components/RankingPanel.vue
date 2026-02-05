@@ -31,7 +31,7 @@
             </div>
             <div class="badge-info">
               <div class="badge-name">{{ getTopPlayer(badge).name }}</div>
-              <div class="badge-level">{{ getTopPlayer(badge).level }}</div>
+              <div class="badge-level">{{ getTopPlayer(badge).phone }}</div>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@
           <div class="col-rank">
             <img 
               v-if="player.position <= 3" 
-              :src="`/image/rank${player.position}.png`" 
+              :src="`./image/rank${player.position}.png`" 
               :alt="`Rank ${player.position}`"
               class="rank-icon"
             />
@@ -83,7 +83,7 @@ const props = defineProps({
 })
 
 // Video source - sử dụng đường dẫn từ public folder
-const videoSrc = '/image/Comp1.mp4'
+const videoSrc = './image/Comp1.mp4'
 const videoRef = ref(null)
 const videoError = ref(false)
 
@@ -110,7 +110,7 @@ const getTopPlayer = (position) => {
 }
 
 const getBadgeImage = (position) => {
-  return `/image/top${position}.png`
+  return `./image/top${position}.png`
 }
 </script>
 

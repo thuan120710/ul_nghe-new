@@ -68,7 +68,7 @@ defineEmits(['watchVideo'])
 .job-details {
   width: 471px;
   height: 768px;
-  background: #3A393C;
+  background: rgba(0, 0, 0, 0.50);
   border: 2px solid #FECD08;
   border-radius: 8px;
   padding: 20px;

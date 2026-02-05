@@ -150,7 +150,6 @@ const levelPercentage = computed(() => {
 }
 
 .job-start-section {
-  background: #3A393C;
   border: 2px solid #FECD08;
   border-radius: 10px;
 
@@ -161,12 +160,13 @@ const levelPercentage = computed(() => {
   align-items: center;
   flex: 1 0 0;
   align-self: stretch;
+  background: rgba(0, 0, 0, 0.50);
 }
 
 .job-upgrade-section {
   width: 471px;
   height: 368px;
-  background: #3A393C;
+  background: rgba(0, 0, 0, 0.50);
   border: 2px solid #FECD08;
   border-radius: 10px;
   padding: 32px;

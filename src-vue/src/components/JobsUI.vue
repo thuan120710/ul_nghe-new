@@ -50,9 +50,6 @@ defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo'])
 .jobs-ui {
   /* width: 1541px;
   height: 924px; */
-  background: rgba(0, 0, 0, 0.85);
-  border: 2px solid #4A9FD8;
-  border-radius: 8px;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -66,6 +63,9 @@ defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo'])
   justify-content: center;
   flex-shrink: 0;
   aspect-ratio: 512/307;
+  border-radius: 1.25rem;
+  background: rgba(93, 93, 95, 0.50);
+  box-shadow: -4px -4px 4px 0 #2D2D2D inset, 2px 2px 4px 0 #797979 inset;
 }
 
 .ui-header {
@@ -83,7 +83,7 @@ defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo'])
 .btn-close {
   width: 35px;
   height: 35px;
-  background: rgba(255, 0, 0, 0.2);
+  background: rgba(93, 93, 95, 0.50);
   color: #ff0000;
   font-size: 20px;
   cursor: pointer;
