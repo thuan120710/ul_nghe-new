@@ -214,7 +214,7 @@ onMounted(() => {
           ranks: event.data.jobRanking.map((player, index) => ({
             position: index + 1,
             name: player.name || 'Unknown',
-            level: player.citizenid || player.level || 'N/A',
+            level: player.cid || 'N/A',
             phone: player.count || 0
           }))
         }
