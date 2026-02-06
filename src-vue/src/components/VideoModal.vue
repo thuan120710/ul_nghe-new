@@ -82,7 +82,7 @@ const handleClose = () => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 15rem;
+  padding-top: 18.5rem;
   z-index: 9999;
   animation: fadeIn 0.3s ease;
 }

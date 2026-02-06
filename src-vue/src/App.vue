@@ -172,12 +172,19 @@ onMounted(() => {
       // Map job data from Config.JobsMenu structure
       const jobConfig = event.data.jobs
       if (jobConfig) {
+        // Xử lý videoUrl từ config
+        let videoUrl = ''
+        if (jobConfig.guide?.videoID) {
+          // Nếu có videoID trong config, tạo URL YouTube
+          videoUrl = `https://www.youtube.com/watch?v=${jobConfig.guide.videoID}`
+        }
+        
         jobData.value = {
           name: jobConfig.name || '',
           image: `./image/${jobConfig.home?.img || 'vesinh.png'}`,
           toolImage: jobConfig.toolImage ? `./image/${jobConfig.toolImage}` : null,
           description: jobConfig.home?.description || '',
-          videoUrl: jobConfig.guide?.videoID ? `https://www.youtube.com/embed/${jobConfig.guide.videoID}` : '',
+          videoUrl: videoUrl,
           requirements: { 
             level: jobConfig.requiredLevel || 1, 
             exp: 0 

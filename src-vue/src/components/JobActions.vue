@@ -64,7 +64,8 @@
       </button>
       
       <button v-else class="btn-stop-job" @click="$emit('stopJob')">
-        KẾT THÚC CÔNG VIỆC ✕
+        KẾT THÚC CÔNG VIỆC
+        <img src="/image/clone.png" alt="Stop" class="button-icon" />
       </button>
     </div>
 
@@ -391,19 +392,31 @@ const levelPercentage = computed(() => {
 .btn-start-job {
   width: 407px;
   height: 46px;
-  padding: 16px;
-  background: #FECD08;
-  border-radius: 5px;
-  color: #000000;
-  font-weight: 700;
-  font-size: 20px;
   cursor: pointer;
   transition: all 0.3s;
   text-transform: uppercase;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  color: #000;
+  leading-trim: both;
+  text-edge: cap;
+
+  /* Bold 20 */
+  font-family: "Baloo 2";
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+
+  border-radius: 0.3125rem;
+  background: var(--Gold, #FECD08);
+  display: flex;
+  padding: 1rem 0;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: stretch;
 }
 
 .btn-start-job:hover {
@@ -414,12 +427,6 @@ const levelPercentage = computed(() => {
 .btn-stop-job {
   width: 407px;
   height: 46px;
-  padding: 16px;
-  background: #ED2449;
-  border-radius: 5px;
-  color: #FFFFFF;
-  font-weight: 700;
-  font-size: 20px;
   cursor: pointer;
   transition: all 0.3s;
   text-transform: uppercase;
@@ -427,7 +434,24 @@ const levelPercentage = computed(() => {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border: 2px solid #FF0066;
+  border-radius: 0.3125rem;
+  background: var(--0132F7, #ED2449);
+  color: var(--White, #FFF);
+  leading-trim: both;
+  text-edge: cap;
+
+  /* Bold 20 */
+  font-family: "Baloo 2";
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  display: flex;
+  padding: 1rem 0;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: stretch;
   
 }
 
