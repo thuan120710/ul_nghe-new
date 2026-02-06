@@ -79,8 +79,8 @@ RegisterNUICallback('acceptJob', function(data, cb)
             isCurrentlyWorking = true  -- Bắt đầu thành công
             doi:resolve(true)
         else
-            -- result = false nghĩa là đang làm việc rồi
-            isCurrentlyWorking = true  -- Cập nhật state vì đang làm
+            -- result = false có thể là cooldown hoặc lỗi khác
+            -- KHÔNG set isCurrentlyWorking = true ở đây
             doi:resolve(false)
         end
     end, data)

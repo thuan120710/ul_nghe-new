@@ -65,30 +65,43 @@ const handleClose = () => {
   })
 }
 
-const handleStartJob = () => {
+const handleStartJob = (selectedMethod) => {
   const jobConfig = jobData.value
-  if (jobConfig.acceptJob) {
-    fetch(`https://${GetParentResourceName()}/acceptJob`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        eventname: jobConfig.acceptJob.eventname,
-        eventtype: jobConfig.acceptJob.eventtype
-      })
-    }).then(response => response.json())
-      .then(result => {
-        if (result) {
-          // Bắt đầu công việc thành công
-          isWorking.value = true
-          jobData.value.isWorking = true
-        } else {
-          // result = false nghĩa là đang làm việc rồi
-          // Cập nhật UI để hiển thị nút KẾT THÚC
-          isWorking.value = true
-          jobData.value.isWorking = true
-        }
-      })
+  
+  // Nếu có selectedMethod (từ popup), sử dụng thông tin của method đó
+  let eventname, eventtype, eventfunction
+  
+  if (selectedMethod) {
+    // Người chơi đã chọn method từ popup
+    eventname = selectedMethod.eventname
+    eventtype = selectedMethod.eventtype
+    eventfunction = selectedMethod.eventfunction || {}
+  } else if (jobConfig.acceptJob) {
+    // Không có popup, sử dụng acceptJob mặc định
+    eventname = jobConfig.acceptJob.eventname
+    eventtype = jobConfig.acceptJob.eventtype
+    eventfunction = {}
+  } else {
+    return
   }
+  
+  fetch(`https://${GetParentResourceName()}/acceptJob`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      eventname: eventname,
+      eventtype: eventtype,
+      eventfunction: eventfunction
+    })
+  }).then(response => response.json())
+    .then(result => {
+      if (result === true) {
+        // Chỉ khi result === true mới cập nhật trạng thái
+        isWorking.value = true
+        jobData.value.isWorking = true
+      }
+      // Nếu result === false, không làm gì cả (giữ nguyên trạng thái)
+    })
 }
 
 const handleStopJob = () => {
@@ -207,6 +220,7 @@ onMounted(() => {
           acceptJob: jobConfig.acceptJob,
           upgradeJob: jobConfig.upgradeJob,
           cancelJob: jobConfig.cancelJob,
+          button: jobConfig.button || {},  // Thêm button config
           isWorking: isWorking.value  // Sử dụng state từ Lua
         }
       }

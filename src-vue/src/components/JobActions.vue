@@ -1,5 +1,14 @@
 <template>
   <div class="job-actions">
+    <!-- Method Popup -->
+    <MethodPopup 
+      v-if="showMethodPopup"
+      :jobName="job.name"
+      :methods="job.button?.methodbtn || {}"
+      @close="showMethodPopup = false"
+      @selectMethod="handleMethodSelect"
+    />
+
     <!-- Top Section: Job Icon & Start Job -->
     <div class="job-start-section">
       <!-- Job Icon -->
@@ -58,7 +67,7 @@
       </div>
 
       <!-- Start/Stop Job Button -->
-      <button v-if="!job.isWorking" class="btn-start-job" @click="$emit('startJob')">
+      <button v-if="!job.isWorking" class="btn-start-job" @click="handleStartJob">
         BẮT ĐẦU CÔNG VIỆC
         <img src="/image/Primary3.png" alt="Start" class="button-icon" />
       </button>
@@ -69,12 +78,13 @@
       </button>
     </div>
 
-    <!-- Bottom Section: Skill Level & Upgrade (chỉ hiển thị nếu hasLevel = true) -->
-    <div class="job-upgrade-section" v-if="job.hasLevel">
+    <!-- Bottom Section: Skill Level & Upgrade (luôn hiển thị) -->
+    <div class="job-upgrade-section">
       <!-- Khối 1: Cấp độ nghề hiện tại -->
       <div class="skill-header">
         <span class="section-title">Cấp độ nghề hiện tại</span>
-        <span class="skill-level-badge">Level {{ job.skills?.level || 1 }}</span>
+        <span class="skill-level-badge" v-if="job.hasLevel">Level {{ job.skills?.level || 1 }}</span>
+        <span class="skill-level-badge no-level" v-else>VÔ CẤP</span>
       </div>
 
       <!-- Khối 2: Tích lũy nghề và Level nhận việc -->
@@ -83,7 +93,7 @@
         <div class="skill-progress-item">
           <div class="skill-row">
             <div class="section-title">Tích lũy nghề</div>
-            <div class="exp-value">{{ job.skills?.exp || 0 }}<span class="max-exp">/{{ job.skills?.maxExp || 100 }}</span></div>
+            <div class="exp-value">{{ job.skills?.exp || 0 }}</div>
           </div>
           <div class="exp-bar">
             <div class="exp-progress" :style="{ width: expPercentage + '%' }"></div>
@@ -94,7 +104,7 @@
         <div class="skill-progress-item">
           <div class="skill-row">
             <div class="section-title">Level nhận việc</div>
-            <div class="level-value">{{ job.skills?.nextLevel || 1 }}<span class="max-level">/{{ job.skills?.maxLevel || 1 }}</span></div>
+            <div class="level-value">{{ job.skills?.nextLevel || 1 }}</div>
           </div>
           <div class="level-bar">
             <div class="level-progress" :style="{ width: levelPercentage + '%' }"></div>
@@ -103,12 +113,18 @@
       </div>
 
       <!-- Mô tả -->
-      <div class="skill-description" v-html="job.skills?.description || ''">
+      <div class="skill-description" v-html="job.skills?.description || 'Tích lũy đủ điểm nghề và Level của bạn để nâng cấp nghề.<br>Khi nâng cấp nghề bạn sẽ được nhận thêm phần thưởng thu nhập và EXP khi làm nghề.'">
       </div>
 
       <!-- Upgrade Button -->
-      <button class="btn-upgrade" @click="$emit('upgradeSkill')" v-if="job.upgradeJob && job.upgradeJob.eventname">
-        NÂNG CẤP NGHỀ
+      <button 
+        class="btn-upgrade" 
+        :class="{ disabled: !job.hasLevel || !job.upgradeJob || !job.upgradeJob.eventname }"
+        :disabled="!job.hasLevel || !job.upgradeJob || !job.upgradeJob.eventname"
+        @click="job.hasLevel && job.upgradeJob && job.upgradeJob.eventname ? $emit('upgradeSkill') : null"
+      >
+        <span v-if="!job.hasLevel">KHÔNG CÓ NÂNG CẤP</span>
+        <span v-else>NÂNG CẤP NGHỀ</span>
         <img src="/image/Primary2.png" alt="Upgrade" class="button-icon" />
       </button>
     </div>
@@ -116,7 +132,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import MethodPopup from './MethodPopup.vue'
 
 const props = defineProps({
   job: {
@@ -126,6 +143,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['startJob', 'stopJob', 'upgradeSkill'])
+
+const showMethodPopup = ref(false)
 
 const expPercentage = computed(() => {
   const exp = props.job.skills?.exp || 0
@@ -138,6 +157,30 @@ const levelPercentage = computed(() => {
   const maxLevel = props.job.skills?.maxLevel || 1
   return Math.min((nextLevel / maxLevel) * 100, 100)
 })
+
+// Kiểm tra xem nghề có methodBtn không
+const hasMethodBtn = computed(() => {
+  const methodBtn = props.job.button?.methodbtn
+  return methodBtn && Object.keys(methodBtn).length > 0
+})
+
+// Xử lý khi bấm nút "Bắt đầu công việc"
+const handleStartJob = () => {
+  if (hasMethodBtn.value) {
+    // Nếu có methodBtn, hiển thị popup
+    showMethodPopup.value = true
+  } else {
+    // Nếu không có methodBtn, trigger event startJob bình thường
+    emit('startJob')
+  }
+}
+
+// Xử lý khi chọn method từ popup
+const handleMethodSelect = (option) => {
+  showMethodPopup.value = false
+  // Emit event với thông tin method được chọn
+  emit('startJob', option)
+}
 </script>
 
 <style scoped>
@@ -569,7 +612,11 @@ const levelPercentage = computed(() => {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-    
+}
+
+.skill-level-badge.no-level {
+    border-color: #666;
+    color: #666;
 }
 
 .skill-row {
@@ -592,21 +639,6 @@ const levelPercentage = computed(() => {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-}
-
-.exp-value .max-exp,
-.level-value .max-level {
- color: #FECD08;
-  leading-trim: both;
-  text-edge: cap;
-
-  /* Bold 16 */
-  font-family: "Baloo 2";
-  font-size: 1rem;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  
 }
 
 .section-title {
@@ -754,10 +786,24 @@ const levelPercentage = computed(() => {
   transform: translateY(-2px);
 }
 
+.btn-upgrade.disabled,
 .btn-upgrade:disabled {
-  background: #666;
-  border-color: #666;
-  cursor: not-allowed;
+
+  display: flex;
+  padding: 1rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: stretch;
+  border-radius: 0.3125rem;
   opacity: 0.5;
+  background: var(--5D5D5F, #5D5D5F);
 }
+
+.btn-upgrade.disabled:hover,
+.btn-upgrade:disabled:hover {
+  background: #3A393C;
+  transform: none;
+}
+
 </style>

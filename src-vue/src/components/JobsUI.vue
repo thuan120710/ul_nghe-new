@@ -20,7 +20,7 @@
       <!-- Center Panel: Job Actions -->
       <JobActions 
         :job="jobData"
-        @startJob="$emit('startJob')"
+        @startJob="(method) => $emit('startJob', method)"
         @stopJob="$emit('stopJob')"
         @upgradeSkill="$emit('upgradeSkill')"
       />
