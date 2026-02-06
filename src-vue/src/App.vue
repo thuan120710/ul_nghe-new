@@ -212,6 +212,16 @@ onMounted(() => {
           videoUrl = `https://www.youtube.com/watch?v=${jobConfig.guide.videoID}`
         }
         
+        // Tính toán level yêu cầu dựa trên cấp độ nghề hiện tại
+        const careerLevel = event.data.CareerLevel || 1
+        let requiredLevel = 100  // Mặc định
+        
+        if (jobConfig.careerLevel) {
+          // Lấy level yêu cầu dựa trên cấp độ nghề hiện tại
+          const levelKey = `level${careerLevel}`
+          requiredLevel = jobConfig.careerLevel[levelKey] || 100
+        }
+        
         jobData.value = {
           name: jobConfig.name || '',
           image: `./image/${jobConfig.home?.img || 'vesinh.png'}`,
@@ -226,16 +236,6 @@ onMounted(() => {
             title: jobConfig.guide?.title || 'HƯỚNG DẪN', 
             description: jobConfig.guide?.description || '' 
           },
-          // Tính toán level yêu cầu dựa trên cấp độ nghề hiện tại
-          const careerLevel = event.data.CareerLevel || 1
-          let requiredLevel = 100  // Mặc định
-          
-          if (jobConfig.careerLevel) {
-            // Lấy level yêu cầu dựa trên cấp độ nghề hiện tại
-            const levelKey = `level${careerLevel}`
-            requiredLevel = jobConfig.careerLevel[levelKey] || 100
-          }
-          
           skills: { 
             level: careerLevel, 
             exp: event.data.CareerProgress || 0, 
