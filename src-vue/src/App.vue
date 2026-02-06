@@ -226,11 +226,22 @@ onMounted(() => {
             title: jobConfig.guide?.title || 'HƯỚNG DẪN', 
             description: jobConfig.guide?.description || '' 
           },
+          // Tính toán level yêu cầu dựa trên cấp độ nghề hiện tại
+          const careerLevel = event.data.CareerLevel || 1
+          let requiredLevel = 100  // Mặc định
+          
+          if (jobConfig.careerLevel) {
+            // Lấy level yêu cầu dựa trên cấp độ nghề hiện tại
+            const levelKey = `level${careerLevel}`
+            requiredLevel = jobConfig.careerLevel[levelKey] || 100
+          }
+          
           skills: { 
-            level: event.data.CareerLevel || 1, 
+            level: careerLevel, 
             exp: event.data.CareerProgress || 0, 
             maxExp: event.data.CareerNextLevel || 100,
-            nextLevel: jobConfig.requiredLevel || 1,
+            playerLevel: event.data.currentLevel || 1,  // Level nhân vật hiện tại
+            requiredLevel: requiredLevel,  // Level yêu cầu để nâng cấp nghề
             maxLevel: jobConfig.maxLevel || 1,
             description: jobConfig.careerLevel?.name ? `Nâng cấp nghề ${jobConfig.careerLevel.name} để mở khóa thêm nhiều tính năng và tăng thu nhập.` : ''
           },

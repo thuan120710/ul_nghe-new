@@ -87,7 +87,7 @@
         <span class="skill-level-badge no-level" v-else>VÔ CẤP</span>
       </div>
 
-      <!-- Khối 2: Tích lũy nghề và Level nhận việc -->
+      <!-- Khối 2: Tích lũy nghề và Level nhân vật -->
       <div class="skill-progress-container">
         <!-- Tích lũy nghề -->
         <div class="skill-progress-item">
@@ -100,11 +100,11 @@
           </div>
         </div>
 
-        <!-- Level nhận việc -->
+        <!-- Level nhân vật -->
         <div class="skill-progress-item">
           <div class="skill-row">
-            <div class="section-title">Level nhận việc</div>
-            <div class="level-value">{{ job.skills?.nextLevel || 1 }}</div>
+            <div class="section-title">Level nhân vật</div>
+            <div class="level-value">{{ job.skills?.playerLevel || 1 }}</div>
           </div>
           <div class="level-bar">
             <div class="level-progress" :style="{ width: levelPercentage + '%' }"></div>
@@ -153,9 +153,9 @@ const expPercentage = computed(() => {
 })
 
 const levelPercentage = computed(() => {
-  const nextLevel = props.job.skills?.nextLevel || 1
-  const maxLevel = props.job.skills?.maxLevel || 1
-  return Math.min((nextLevel / maxLevel) * 100, 100)
+  const playerLevel = props.job.skills?.playerLevel || 1
+  const requiredLevel = props.job.skills?.requiredLevel || 1
+  return Math.min((playerLevel / requiredLevel) * 100, 100)
 })
 
 // Kiểm tra xem nghề có methodBtn không
