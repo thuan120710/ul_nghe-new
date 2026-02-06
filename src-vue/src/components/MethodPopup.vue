@@ -105,6 +105,7 @@ const selectMethod = (option) => {
   flex-shrink: 0;
   aspect-ratio: 9/8;
   fill: var(--Gold, #FECD08);
+  background: var(--Grey-1, #5D5D5F);
 }
 
 .btn-close-popup:hover {

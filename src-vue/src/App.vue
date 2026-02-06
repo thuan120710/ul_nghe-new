@@ -1,16 +1,18 @@
 <template>
   <div class="app-container">
-    <JobsUI 
-      v-if="isVisible"
-      :playerData="playerData"
-      :jobData="jobData"
-      :rankingData="rankingData"
-      @close="handleClose"
-      @startJob="handleStartJob"
-      @stopJob="handleStopJob"
-      @upgradeSkill="handleUpgradeSkill"
-      @watchVideo="handleWatchVideo"
-    />
+    <div class="ui-wrapper" :style="{ transform: `scale(${uiScale})` }">
+      <JobsUI 
+        v-if="isVisible"
+        :playerData="playerData"
+        :jobData="jobData"
+        :rankingData="rankingData"
+        @close="handleClose"
+        @startJob="handleStartJob"
+        @stopJob="handleStopJob"
+        @upgradeSkill="handleUpgradeSkill"
+        @watchVideo="handleWatchVideo"
+      />
+    </div>
     
     <VideoModal 
       :isVisible="showVideoModal"
@@ -21,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import JobsUI from './components/JobsUI.vue'
 import VideoModal from './components/VideoModal.vue'
 
@@ -29,6 +31,7 @@ const isVisible = ref(false)
 const showVideoModal = ref(false)
 const currentVideoUrl = ref('')
 const isWorking = ref(false)
+const uiScale = ref(1)
 
 const playerData = ref({
   name: 'Christiano Ronaldo',
@@ -160,7 +163,24 @@ const GetParentResourceName = () => {
   return window.location.hostname === 'localhost' ? 'f17-jobs' : window.GetParentResourceName()
 }
 
+// Hàm tính toán scale dựa trên kích thước màn hình
+const calculateScale = () => {
+  const designWidth = 1920  // Chiều rộng thiết kế gốc
+  const designHeight = 1080 // Chiều cao thiết kế gốc
+  
+  const scaleX = window.innerWidth / designWidth
+  const scaleY = window.innerHeight / designHeight
+  
+  // Lấy scale nhỏ hơn để đảm bảo UI không bị cắt
+  uiScale.value = Math.min(scaleX, scaleY, 1) // Không scale lớn hơn 1
+}
+
 onMounted(() => {
+  // Tính scale ban đầu
+  calculateScale()
+  
+  // Lắng nghe sự kiện resize
+  window.addEventListener('resize', calculateScale)
   window.addEventListener('message', (event) => {
     const { action } = event.data
     
@@ -260,6 +280,10 @@ onMounted(() => {
     }
   })
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', calculateScale)
+})
 </script>
 
 <style>
@@ -307,5 +331,11 @@ ul, li {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.ui-wrapper {
+  transform-origin: center center;
+  transition: transform 0.3s ease;
 }
 </style>
