@@ -15,7 +15,13 @@
       <div class="job-icon" :class="{ 'working-layout': job.isWorking }">
         <div class="icon-circle" :class="{ 'small': job.isWorking }">
           <div class="icon-bg"></div>
-          <img :src="job.toolImage || job.image" :alt="job.name" class="job-tool-icon" />
+          <img 
+            :src="getToolImage" 
+            :alt="job.name" 
+            class="job-tool-icon"
+            @error="handleImageError"
+            @load="handleImageLoad"
+          />
         </div>
         <div class="job-name">
           <span v-if="!job.isWorking">{{ job.name }}</span>
@@ -161,6 +167,51 @@ const props = defineProps({
 const emit = defineEmits(['startJob', 'stopJob', 'upgradeSkill'])
 
 const showMethodPopup = ref(false)
+
+// Handler khi ảnh load thành công
+const handleImageLoad = (event) => {
+  console.log('✅ Image loaded successfully:', event.target.src)
+}
+
+// Handler khi ảnh load thất bại
+const handleImageError = (event) => {
+  console.error('❌ Image failed to load:', event.target.src)
+  console.error('Trying fallback to job.image:', props.job.image)
+  // Fallback về ảnh mặc định
+  event.target.src = props.job.image
+}
+
+// Computed để lấy ảnh tool theo level
+const getToolImage = computed(() => {
+  let toolImage = props.job.toolImage
+  
+  // Xử lý path từ Lua có thể có "./image/" prefix hoặc dấu phẩy
+  if (typeof toolImage === 'string') {
+    toolImage = toolImage.replace('./image/', '').replace(/^image\//, '').split(',')[0].trim()
+  }
+  
+  const currentLevel = props.job.skills?.level || 1
+  
+  // Nếu nghề có level, tự động thêm số level vào tên file
+  if (props.job.hasLevel && toolImage) {
+    // Loại bỏ .png nếu có
+    const baseName = toolImage.replace('.png', '')
+    // Tạo tên file theo pattern: baseName + level + .png
+    const leveledImage = `./image/${baseName}${currentLevel}.png`
+    console.log('Job:', props.job.name, 'Level:', currentLevel, 'Image:', leveledImage)
+    return leveledImage
+  }
+  
+  // Nếu toolImage là string thông thường (nghề không có level)
+  if (toolImage) {
+    // Thêm .png nếu chưa có
+    const fileName = toolImage.endsWith('.png') ? toolImage : `${toolImage}.png`
+    return `./image/${fileName}`
+  }
+  
+  // Fallback về image mặc định
+  return props.job.image
+})
 
 const expPercentage = computed(() => {
   const exp = props.job.skills?.exp || 0
