@@ -1,8 +1,8 @@
 <template>
   <div class="job-actions">
-    <!-- Method Popup -->
+    <!-- Method Popup - Chỉ hiển thị khi CHƯA làm việc -->
     <MethodPopup 
-      v-if="showMethodPopup"
+      v-if="showMethodPopup && !job.isWorking"
       :jobName="job.name"
       :methods="job.button?.methodbtn || {}"
       @close="showMethodPopup = false"
@@ -10,25 +10,28 @@
     />
 
     <!-- Top Section: Job Icon & Start Job -->
-    <div class="job-start-section">
-      <!-- Job Icon -->
-      <div class="job-icon">
-        <div class="icon-circle">
+    <div class="job-start-section" :class="{ 'working-state': job.isWorking }">
+      <!-- Job Icon - Layout khác nhau khi đang làm việc -->
+      <div class="job-icon" :class="{ 'working-layout': job.isWorking }">
+        <div class="icon-circle" :class="{ 'small': job.isWorking }">
           <div class="icon-bg"></div>
           <img :src="job.toolImage || job.image" :alt="job.name" class="job-tool-icon" />
         </div>
-        <div class="job-name">{{ job.name }}</div>
+        <div class="job-name">
+          <span v-if="!job.isWorking">{{ job.name }}</span>
+          <span v-else>Đang làm việc {{ job.name }} (LV{{ job.skills?.level || 1 }})...</span>
+        </div>
       </div>
 
-      <!-- Requirements Info -->
-      <div class="requirements-header">
+      <!-- Requirements Info - Chỉ hiển thị khi CHƯA làm việc -->
+      <div v-if="!job.isWorking" class="requirements-header">
         <span class="req-label">Biến động thị trường</span>
         <span class="req-badge level-badge">Level {{ job.requirements?.level || 1 }}</span>
         <span class="req-badge exp-badge">EXP {{ job.requirements?.exp || 0 }}</span>
       </div>
 
-      <!-- Three Stars Row -->
-      <div class="stars-row">
+      <!-- Three Stars Row - Chỉ hiển thị khi CHƯA làm việc -->
+      <div v-if="!job.isWorking" class="stars-row">
         <div class="star-group">
           <div class="star-label">
             Thu nhập
@@ -66,6 +69,13 @@
         </div>
       </div>
 
+      <!-- Selected Method Display - Hiển thị khi đang làm việc -->
+      <div v-if="job.isWorking && job.selectedMethod" class="selected-method-container">
+        <button class="selected-method-button">
+          {{ job.selectedMethod.buttonname }}
+        </button>
+      </div>
+
       <!-- Start/Stop Job Button -->
       <button v-if="!job.isWorking" class="btn-start-job" @click="handleStartJob">
         BẮT ĐẦU CÔNG VIỆC
@@ -93,7 +103,10 @@
         <div class="skill-progress-item">
           <div class="skill-row">
             <div class="section-title">Tích lũy nghề</div>
-            <div class="exp-value">{{ job.skills?.exp || 0 }}</div>
+            <div class="exp-value">
+              <span class="current-value">{{ job.skills?.exp || 0 }}</span>
+              <span class="max-value">/{{ job.skills?.maxExp || 0 }}</span>
+            </div>
           </div>
           <div class="exp-bar">
             <div class="exp-progress" :style="{ width: expPercentage + '%' }"></div>
@@ -104,7 +117,10 @@
         <div class="skill-progress-item">
           <div class="skill-row">
             <div class="section-title">Level nhân vật</div>
-            <div class="level-value">{{ job.skills?.playerLevel || 1 }}</div>
+            <div class="level-value">
+              <span class="current-value">{{ job.skills?.playerLevel || 1 }}</span>
+              <span class="max-value">/{{ job.skills?.requiredLevel || 1 }}</span>
+            </div>
           </div>
           <div class="level-bar">
             <div class="level-progress" :style="{ width: levelPercentage + '%' }"></div>
@@ -166,8 +182,9 @@ const hasMethodBtn = computed(() => {
 
 // Xử lý khi bấm nút "Bắt đầu công việc"
 const handleStartJob = () => {
-  if (hasMethodBtn.value) {
-    // Nếu có methodBtn, hiển thị popup
+  // Chỉ hiển thị popup khi CHƯA làm việc và có methodBtn
+  if (!props.job.isWorking && hasMethodBtn.value) {
+    // Nếu có methodBtn và chưa làm việc, hiển thị popup
     showMethodPopup.value = true
   } else {
     // Nếu không có methodBtn, trigger event startJob bình thường
@@ -205,6 +222,14 @@ const handleMethodSelect = (option) => {
   flex: 1 0 0;
   align-self: stretch;
   background: rgba(0, 0, 0, 0.50);
+  transition: background 0.3s ease;
+}
+
+/* Style khi đang làm việc */
+.job-start-section.working-state {
+  border-radius: 0.625rem;
+  border: 2px solid var(--FECD08, #FECD08);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.50) 0%, #F9E000 100%);
 }
 
 .job-upgrade-section {
@@ -227,7 +252,15 @@ const handleMethodSelect = (option) => {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  
+}
+
+/* Layout khi đang làm việc - logo nhỏ bên trái */
+.job-icon.working-layout {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  height: auto;
+  gap: 16px;
 }
 
 .icon-circle {
@@ -242,7 +275,15 @@ const handleMethodSelect = (option) => {
   border-radius: 3.125rem;
   border: 1px solid var(--FECD08, #FECD08);
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #4CBA6F 100%);
+  transition: all 0.3s ease;
+}
 
+/* Logo nhỏ lại khi đang làm việc */
+.icon-circle.small {
+  height: 3.5rem;
+  width: 3.5rem;
+  padding: 0.5rem;
+  flex-shrink: 0;
 }
 
 .icon-bg {
@@ -255,23 +296,33 @@ const handleMethodSelect = (option) => {
 
 .job-tool-icon {
   position: relative;
-
   width: 3.75rem;
   flex: 1 0 0;
   aspect-ratio: 1/1;
+  transition: all 0.3s ease;
+}
 
-
+/* Icon nhỏ lại khi đang làm việc */
+.icon-circle.small .job-tool-icon {
+  width: 2.5rem;
 }
 
 .job-name {
- color: var(--FECD08, #FECD08);
+  color: var(--FECD08, #FECD08);
   text-align: center;
   font-family: "Baloo 2";
   font-size: 1.5rem;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  }
+}
+
+/* Text căn trái khi đang làm việc */
+.working-layout .job-name {
+  text-align: left;
+  flex: 1;
+  font-size: 1.3rem;
+}
 
 .requirements-info {
   width: 100%;
@@ -430,6 +481,36 @@ const handleMethodSelect = (option) => {
   stroke: #FECD08;
   stroke-width: 1px;
   fill: #FECD08;
+}
+
+.selected-method-container {
+  width: 407px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.selected-method-button {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 0.625rem;
+  color: #000;
+  font-family: "Baloo 2";
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: default;
+  display: flex;
+  padding: 0.5rem 0.625rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: stretch;
+  border-radius: 0.625rem;
+  background: var(--White, #FFF);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 }
 
 .btn-start-job {
@@ -628,7 +709,6 @@ const handleMethodSelect = (option) => {
 
 .exp-value,
 .level-value {
-  color: var(--White, #FFF);
   text-align: center;
   leading-trim: both;
   text-edge: cap;
@@ -641,12 +721,27 @@ const handleMethodSelect = (option) => {
   line-height: normal;
 }
 
+.exp-value .current-value,
+.level-value .current-value {
+  color: var(--White, #FFF);
+}
+
+.exp-value .max-value,
+.level-value .max-value {
+  color: #FECD08;
+}
+
 .section-title {
-  color: #FFF;
+  color: var(--White, #FFF);
+  text-align: center;
+  leading-trim: both;
+  text-edge: cap;
+
+  /* Bold 16 */
   font-family: "Baloo 2";
   font-size: 1rem;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 700;
   line-height: normal;
 }
 

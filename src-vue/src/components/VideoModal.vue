@@ -82,7 +82,7 @@ const handleClose = () => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 18.5rem;
+  padding-top: 12.25rem;
   z-index: 9999;
   animation: fadeIn 0.3s ease;
 }
@@ -100,8 +100,8 @@ const handleClose = () => {
   position: relative;
   background: transparent;
   animation: slideUp 0.3s ease;
-  width: 111rem;
-  height: 58rem;
+    width: 93.0625rem;
+    height: 47.6875rem;
 }
 
 @keyframes slideUp {

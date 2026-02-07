@@ -2,6 +2,7 @@ local jobName = nil
 local LevelJob, JobPoint, careerNextLevel = nil, nil, nil
 local isClickButton = false
 local isCurrentlyWorking = false  -- Theo dõi trạng thái công việc
+local selectedEventName = nil  -- Chỉ lưu eventname để tìm lại trong config
 
 local openMenuSpamProtect = 0
 local function openMenu(job)
@@ -37,6 +38,17 @@ local function openMenu(job)
 
     local jobRanking = lib.callback.await('f17_leaderboard:sv:getJobRanking', false, jobName)
 
+    -- Tìm selectedMethod từ config dựa vào eventname đã lưu
+    local selectedMethod = nil
+    if selectedEventName and Config.JobsMenu[jobName].button and Config.JobsMenu[jobName].button.methodbtn then
+        for key, method in pairs(Config.JobsMenu[jobName].button.methodbtn) do
+            if method.eventname == selectedEventName then
+                selectedMethod = method
+                break
+            end
+        end
+    end
+
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = 'show',
@@ -50,7 +62,8 @@ local function openMenu(job)
         CareerTaxi = taxiData,
         jobs = Config.JobsMenu[jobName],
         jobRanking = jobRanking,
-        isWorking = isCurrentlyWorking  -- Gửi trạng thái công việc
+        isWorking = isCurrentlyWorking,  -- Gửi trạng thái công việc
+        selectedMethod = selectedMethod  -- Gửi method đã tìm được từ config
     })
 end
 
@@ -73,14 +86,17 @@ end)
 RegisterNUICallback('acceptJob', function(data, cb)
     if isClickButton then return end
     isClickButton = true
+    
+    -- Lưu eventname để tìm lại method từ config khi mở menu
+    selectedEventName = data.eventname
+    
     local doi = promise.new()
     TriggerEvent(data.eventname, function(result)
         if result then
             isCurrentlyWorking = true  -- Bắt đầu thành công
             doi:resolve(true)
         else
-            -- result = false có thể là cooldown hoặc lỗi khác
-            -- KHÔNG set isCurrentlyWorking = true ở đây
+            isCurrentlyWorking = true
             doi:resolve(false)
         end
     end, data)
@@ -91,6 +107,7 @@ end)
 
 RegisterNUICallback('cancelJob', function(data, cb)
     isCurrentlyWorking = false  -- Cập nhật trạng thái khi kết thúc công việc
+    selectedEventName = nil  -- Xóa eventname đã lưu
     CallTrigger(data.eventname, data.eventtype, data.eventfunction)
     cb(true)
 end)

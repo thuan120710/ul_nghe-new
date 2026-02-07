@@ -14,11 +14,13 @@
       />
     </div>
     
-    <VideoModal 
-      :isVisible="showVideoModal"
-      :videoUrl="currentVideoUrl"
-      @close="handleCloseVideo"
-    />
+    <div class="video-wrapper" :style="{ transform: `scale(${uiScale})` }">
+      <VideoModal 
+        :isVisible="showVideoModal"
+        :videoUrl="currentVideoUrl"
+        @close="handleCloseVideo"
+      />
+    </div>
   </div>
 </template>
 
@@ -79,6 +81,9 @@ const handleStartJob = (selectedMethod) => {
     eventname = selectedMethod.eventname
     eventtype = selectedMethod.eventtype
     eventfunction = selectedMethod.eventfunction || {}
+    // Thêm buttonname vào eventfunction để Lua có thể lưu lại
+    // Tạo một copy của eventfunction để không modify object gốc
+    eventfunction = { ...eventfunction, buttonname: selectedMethod.buttonname }
   } else if (jobConfig.acceptJob) {
     // Không có popup, sử dụng acceptJob mặc định
     eventname = jobConfig.acceptJob.eventname
@@ -102,6 +107,10 @@ const handleStartJob = (selectedMethod) => {
         // Chỉ khi result === true mới cập nhật trạng thái
         isWorking.value = true
         jobData.value.isWorking = true
+        // Lưu lại option đã chọn
+        if (selectedMethod) {
+          jobData.value.selectedMethod = selectedMethod
+        }
       }
       // Nếu result === false, không làm gì cả (giữ nguyên trạng thái)
     })
@@ -121,6 +130,8 @@ const handleStopJob = () => {
     }).then(() => {
       isWorking.value = false
       jobData.value.isWorking = false
+      // Xóa option đã chọn khi kết thúc công việc
+      jobData.value.selectedMethod = null
     })
   }
 }
@@ -185,7 +196,6 @@ onMounted(() => {
     const { action } = event.data
     
     if (action === 'show') {
-      console.log('Received data from game:', event.data)
       isVisible.value = true
       
       // Nhận trạng thái từ Lua
@@ -194,13 +204,11 @@ onMounted(() => {
       }
       
       // Map player data
-      console.log('Avatar URL from Lua:', event.data.avatar)
       playerData.value = {
         name: `${event.data.firstName || ''} ${event.data.lastName || ''}`.trim(),
         level: event.data.currentLevel || 1,
         avatar: event.data.avatar || './image/avatar.png'
       }
-      console.log('Player data:', playerData.value)
       
       // Map job data from Config.JobsMenu structure
       const jobConfig = event.data.jobs
@@ -252,7 +260,8 @@ onMounted(() => {
           upgradeJob: jobConfig.upgradeJob,
           cancelJob: jobConfig.cancelJob,
           button: jobConfig.button || {},  // Thêm button config
-          isWorking: isWorking.value  // Sử dụng state từ Lua
+          isWorking: isWorking.value,  // Sử dụng state từ Lua
+          selectedMethod: event.data.selectedMethod || null  // Nhận selectedMethod từ Lua
         }
       }
       
@@ -348,5 +357,20 @@ ul, li {
 .ui-wrapper {
   transform-origin: center center;
   transition: transform 0.3s ease;
+}
+
+.video-wrapper {
+  transform-origin: center center;
+  transition: transform 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.video-wrapper > * {
+  pointer-events: auto;
 }
 </style>

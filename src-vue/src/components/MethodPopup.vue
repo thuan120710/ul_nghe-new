@@ -11,11 +11,12 @@
 
       <!-- Container Section -->
       <div class="popup-container">
-        <div class="options-list">
+        <div class="options-list" :class="{ 'vertical-layout': methodCount >= 3 }">
           <button 
             v-for="(option, key) in methods" 
             :key="key"
             class="option-button"
+            :class="{ 'wide-button': methodCount >= 3 }"
             @click="selectMethod(option)"
           >
             {{ option.buttonname }}
@@ -27,6 +28,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   jobName: {
     type: String,
@@ -39,6 +42,11 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'selectMethod'])
+
+// Đếm số lượng methods
+const methodCount = computed(() => {
+  return Object.keys(props.methods).length
+})
 
 const selectMethod = (option) => {
   emit('selectMethod', option)
@@ -127,34 +135,47 @@ const selectMethod = (option) => {
 
 .options-list {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+/* Layout dọc khi có 3+ options */
+.options-list.vertical-layout {
   flex-direction: column;
-  gap: 20px;
+  align-items: stretch;
+  gap: 1.25rem;
 }
 
 .option-button {
-  background: rgba(255, 255, 255, 0.95);
   border: none;
   border-radius: 0.625rem;
   color: #000;
   font-family: "Baloo 2";
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
   display: flex;
-  padding: 1rem 0.625rem;
+  padding: 1rem 5.5rem;
   justify-content: center;
   align-items: center;
   gap: 0.625rem;
   align-self: stretch;
   border-radius: 0.625rem;
   background: var(--White, #FFF);
+}
+
+/* Nút dài ra khi có 3+ options */
+.option-button.wide-button {
+  width: 100%;
+  min-width: unset;
+  padding: 1rem 0.625rem;
 }
 
 .option-button:hover {
