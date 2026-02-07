@@ -171,8 +171,8 @@ const calculateScale = () => {
   const scaleX = window.innerWidth / designWidth
   const scaleY = window.innerHeight / designHeight
   
-  // Lấy scale nhỏ hơn để đảm bảo UI không bị cắt
-  uiScale.value = Math.min(scaleX, scaleY, 1) // Không scale lớn hơn 1
+  // Lấy scale nhỏ hơn để UI scale theo tỷ lệ màn hình
+  uiScale.value = Math.min(scaleX, scaleY)
 }
 
 onMounted(() => {

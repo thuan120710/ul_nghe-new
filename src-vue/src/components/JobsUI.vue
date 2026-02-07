@@ -48,21 +48,13 @@ defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo'])
 
 <style scoped>
 .jobs-ui {
-  /* width: 1541px;
-  height: 924px; */
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  transform: scale(1.2);
-  transform-origin: center;
-  display: flex;
-  width: 96.3125rem;
-  height: 57.75rem;
-  flex-direction: column;
-  justify-content: center;
+  width: 1541px;
+  height: 924px;
   flex-shrink: 0;
-  aspect-ratio: 512/307;
   border-radius: 1.25rem;
   background: rgba(93, 93, 95, 0.50);
   box-shadow: -4px -4px 4px 0 #2D2D2D inset, 2px 2px 4px 0 #797979 inset;
