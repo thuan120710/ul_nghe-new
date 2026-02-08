@@ -46,11 +46,10 @@ const jobData = ref({
   image: 'image/vesinh.png',
   description: 'Đang tải...',
   videoUrl: '',
-  requirements: { level: 1, exp: 0 },
+  requirements: { level: 1, exp: 0, tools: [] },
   guide: { title: 'HƯỚNG DẪN', description: '', steps: [] },
   skills: { level: 1, exp: 0, maxExp: 100, nextLevel: 1, maxLevel: 1, description: '' },
   rewards: [],
-  tools: [],
   hasLevel: false,
   isWorking: false
 })
@@ -239,6 +238,46 @@ onMounted(() => {
           requiredLevel = jobConfig.careerLevel[levelKey] || 100
         }
         
+        // Map rewards từ config (load từ ox_inventory)
+        const rewards = (jobConfig.rewards || []).map(reward => {
+          let iconPath = './image/other.png' // fallback
+          
+          if (reward.description) {
+            // Load icon từ ox_inventory
+            iconPath = `nui://ox_inventory/web/images/${reward.description}`
+          }
+          
+          return {
+            name: reward.rewardName || '',
+            description: reward.description || '',
+            icon: iconPath
+          }
+        })
+        
+        // Map tool requirements từ config (load từ ox_inventory)
+        let toolRequirements = []
+        if (jobConfig.requirements) {
+          if (Array.isArray(jobConfig.requirements)) {
+            toolRequirements = jobConfig.requirements.map(req => {
+              let iconPath = './image/other.png' // fallback
+              
+              if (req.description) {
+                // Load icon từ ox_inventory
+                iconPath = `nui://ox_inventory/web/images/${req.description}`
+              }
+              
+              return {
+                name: req.requirementName || '',
+                description: req.description || '',
+                icon: iconPath
+              }
+            })
+          }
+        }
+        
+        console.log('🔧 Tool Requirements:', toolRequirements)
+        console.log('🎁 Rewards:', rewards)
+        
         jobData.value = {
           name: jobConfig.name || '',
           image: `./image/${jobConfig.home?.img || 'vesinh.png'}`,
@@ -247,7 +286,8 @@ onMounted(() => {
           videoUrl: videoUrl,
           requirements: { 
             level: jobConfig.requiredLevel || 1, 
-            exp: 0 
+            exp: 0,
+            tools: toolRequirements  // Thêm tool requirements vào đây
           },
           guide: { 
             title: jobConfig.guide?.title || 'HƯỚNG DẪN', 
@@ -262,8 +302,7 @@ onMounted(() => {
             maxLevel: jobConfig.maxLevel || 1,
             description: jobConfig.careerLevel?.name ? `Nâng cấp nghề ${jobConfig.careerLevel.name} để mở khóa thêm nhiều tính năng và tăng thu nhập.` : ''
           },
-          rewards: [],
-          tools: [],
+          rewards: rewards,  // Thêm rewards từ config
           hasLevel: jobConfig.hasLevel || false,
           acceptJob: jobConfig.acceptJob,
           upgradeJob: jobConfig.upgradeJob,

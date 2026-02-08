@@ -19,29 +19,31 @@
           v-for="(reward, index) in job.rewards" 
           :key="index"
           class="reward-item"
+          :title="reward.name"
         >
-          <img :src="reward.icon" :alt="reward.name" />
+          <img :src="getRewardIcon(reward)" :alt="reward.name" />
         </div>
       </div>
     </div>
 
     <!-- Requirements Section (nếu có) -->
-    <div class="requirements-section" v-if="job.tools && job.tools.length > 0">
+    <div class="requirements-section" v-if="job.requirements?.tools && job.requirements.tools.length > 0">
       <div class="label">Yêu cầu dụng cụ:</div>
       <div class="requirements">
         <div 
-          v-for="(tool, index) in job.tools" 
+          v-for="(requirement, index) in job.requirements.tools" 
           :key="index"
           class="req-item"
+          :title="requirement.name"
         >
-          <img :src="tool.icon" :alt="tool.name" />
+          <img :src="getRequirementIcon(requirement)" :alt="requirement.name" />
         </div>
       </div>
     </div>
 
     <!-- Guide Section -->
     <div class="guide-section" v-if="job.guide">
-      <div class="guide-label">{{ job.guide.title }}</div>
+      <div class="guide-label">Hướng dẫn:</div>
       <div class="guide-text" v-html="job.guide.description"></div>
     </div>
 
@@ -54,7 +56,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   job: {
     type: Object,
     required: true
@@ -62,6 +64,27 @@ defineProps({
 })
 
 defineEmits(['watchVideo'])
+
+// Debug: Log để kiểm tra dữ liệu
+console.log('JobDetails - job data:', props.job)
+console.log('JobDetails - requirements:', props.job.requirements)
+console.log('JobDetails - requirements.tools:', props.job.requirements?.tools)
+console.log('JobDetails - rewards:', props.job.rewards)
+
+// Helper functions để lấy đường dẫn icon
+const getRewardIcon = (reward) => {
+  // Nếu reward có icon thì dùng, không thì dùng description (tên file)
+  if (reward.icon) return reward.icon
+  if (reward.description) return `/image/${reward.description}`
+  return '/image/exp.png' // fallback
+}
+
+const getRequirementIcon = (requirement) => {
+  // Nếu requirement có icon thì dùng, không thì dùng description (tên file)
+  if (requirement.icon) return requirement.icon
+  if (requirement.description) return `/image/${requirement.description}`
+  return '/image/other.png' // fallback
+}
 </script>
 
 <style scoped>
@@ -75,7 +98,6 @@ defineEmits(['watchVideo'])
   display: flex;
   flex-direction: column;
   gap: 15px;
-  overflow-y: auto;
 }
 
 .job-image {
@@ -83,6 +105,7 @@ defineEmits(['watchVideo'])
   width: 100%;
   height: 100%;
   overflow: hidden;
+  max-height: 166px;
 }
 
 .job-image img {
@@ -95,7 +118,8 @@ defineEmits(['watchVideo'])
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 245px;
+  max-height: 200px;
+  min-height: 110px;
 }
 
 .section-title {
@@ -135,7 +159,6 @@ defineEmits(['watchVideo'])
 }
 
 .rewards-section {
-  width: 407px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -220,6 +243,7 @@ defineEmits(['watchVideo'])
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
+  max-height: 130px;
 }
 
 .guide-label {
@@ -298,6 +322,9 @@ defineEmits(['watchVideo'])
 .btn-video:hover {
   background: #FFFFFF;
   transform: translateY(-2px);
+  color: #000000;
+}
+.btn-video .video-icon:hover{
   color: #000000;
 }
 

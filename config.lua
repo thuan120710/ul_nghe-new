@@ -17,6 +17,36 @@ local function GetTTVLStats(jobName)
     end
 end
 
+-- Helper function để lấy rewards từ f17-ttvl
+local function GetTTVLRewards(jobName)
+    local success, rewards = pcall(function()
+        return exports['f17-ttvl']:GetJobRewards(jobName)
+    end)
+    
+    if success and rewards then
+        print(string.format("^2[DEBUG] GetTTVLRewards(%s): Found %d rewards^7", jobName, #rewards))
+        return rewards
+    else
+        print(string.format("^1[ERROR] GetTTVLRewards(%s): Failed to get rewards^7", jobName))
+        return {}
+    end
+end
+
+-- Helper function để lấy requirements từ f17-ttvl
+local function GetTTVLRequirements(jobName)
+    local success, requirements = pcall(function()
+        return exports['f17-ttvl']:GetJobRequirements(jobName)
+    end)
+    
+    if success and requirements then
+        print(string.format("^2[DEBUG] GetTTVLRequirements(%s): Found %d requirements^7", jobName, #requirements))
+        return requirements
+    else
+        print(string.format("^1[ERROR] GetTTVLRequirements(%s): Failed to get requirements^7", jobName))
+        return {}
+    end
+end
+
 Config.JobsMenu = {
   ['vesinh'] = {
     name = "VỆ SINH",
@@ -57,6 +87,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("vesinh"),
+    requirements = GetTTVLRequirements("vesinh"),
     acceptJob = {
       eventname = 'f17_vesinh:cl:DoJob',
       eventtype = 'client'
@@ -126,6 +158,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("xaydung"),
+    requirements = GetTTVLRequirements("xaydung"),
     acceptJob = {
       eventname = 'f17_xaydung:cl:DoJob',
       eventtype = 'client'
@@ -192,6 +226,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("thomo"),
+    requirements = GetTTVLRequirements("thomo"),
     acceptJob = {
       eventname = 'f17_thomo:cl:DoJob',
       eventtype = 'client'
@@ -251,6 +287,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("nuoithu"),
+    requirements = GetTTVLRequirements("nuoithu"),
     acceptJob = {
       eventname = 'f17_cstc:cl:DoJob',
       eventtype = 'client'
@@ -310,6 +348,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("food"),
+    requirements = GetTTVLRequirements("food"),
     acceptJob = {
       eventname = 'f17_grabfood:cl:DoJob',
       eventtype = 'client'
@@ -361,6 +401,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("thodien"),
+    requirements = GetTTVLRequirements("thodien"),
     acceptJob = {
       eventname = 'f17_thodien:cl:DoJob',
       eventtype = 'client'
@@ -422,6 +464,8 @@ Config.JobsMenu = {
     },
     isTeamwork = true,
     isCanBuy = false,
+    rewards = GetTTVLRewards("ngheauto"),
+    requirements = GetTTVLRequirements("ngheauto"),
     acceptJob = {
       eventname = 'f17_ngheauto:cl:DoJob',
       eventtype = 'client'
@@ -501,6 +545,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("tomtit"),
+    requirements = GetTTVLRequirements("tomtit"),
     acceptJob = {
       eventname = 'f17_tomtit:cl:DoJob',
       eventtype = 'client'
@@ -573,6 +619,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("taxi"),
+    requirements = GetTTVLRequirements("taxi"),
     acceptJob = {
       eventname = 'f17_taxi:cl:DoJob',
       eventtype = 'client'
@@ -642,6 +690,8 @@ Config.JobsMenu = {
     },
     isTeamwork = true,
     isCanBuy = false,
+    rewards = GetTTVLRewards("lansanho"),
+    requirements = GetTTVLRequirements("lansanho"),
     acceptJob = {
       eventname = 'f17_lansanho:cl:DoJob',
       eventtype = 'client'
@@ -725,6 +775,8 @@ Config.JobsMenu = {
     },
     isTeamwork = false,
     isCanBuy = false,
+    rewards = GetTTVLRewards("vanchuyen"),
+    requirements = GetTTVLRequirements("vanchuyen"),
     acceptJob = {
       eventname = 'f17_vanchuyen:cl:DoJob',
       eventtype = 'client'
@@ -803,6 +855,8 @@ Config.JobsMenu = {
     isTeamwork = false,
     isCanBuy = true,
     buyMsg = "Bạn có thể nhận vị trí săn thú theo cấp độ nghề.",
+    rewards = GetTTVLRewards("sanban"),
+    requirements = GetTTVLRequirements("sanban"),
     acceptJob = {
       eventname = 'f17_sanban:cl:DoJob',
       eventtype = 'client'
@@ -890,6 +944,8 @@ Config.JobsMenu = {
     isCanBuy = true,
     buyMsg = "Dựa theo cấp độ nghề, bạn có thể nhận được các vị trí kho báu từ dễ - trung bình - khó."..
     "<br>Mỗi vị trí kho báu sẽ có độ khó tăng dần kèm theo tiền thưởng xứng đáng với thành quả.",
+    rewards = GetTTVLRewards("lankhobau"),
+    requirements = GetTTVLRequirements("lankhobau"),
     acceptJob = {
       eventname = 'f17_lankhobau:cl:DoJob',
       eventtype = 'client'
