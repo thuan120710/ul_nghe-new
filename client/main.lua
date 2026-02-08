@@ -52,6 +52,28 @@ local function openMenu(job)
         end
     end
 
+    -- Map tên job từ backupulnghe sang f17_biendong
+    local jobNameMapping = {
+        ['food'] = 'grabfood',
+        ['ngheauto'] = 'ngheauto'  -- Nếu có mapping khác thêm vào đây
+    }
+    local bdvlJobName = jobNameMapping[jobName] or jobName
+
+    -- Lấy market data từ GlobalState
+    local marketData = { money = 0, exp = 0 }
+    if GlobalState.BDVL and GlobalState.BDVL.vieclam and GlobalState.BDVL.vieclam[bdvlJobName] then
+        marketData = {
+            money = GlobalState.BDVL.vieclam[bdvlJobName].price or 0,
+            exp = GlobalState.BDVL.vieclam[bdvlJobName].xp or 0
+        }
+    end
+
+    -- Clone job config và cập nhật market data
+    local jobConfig = json.decode(json.encode(Config.JobsMenu[jobName]))
+    if jobConfig.home then
+        jobConfig.home.market = marketData
+    end
+
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = 'show',
@@ -63,7 +85,7 @@ local function openMenu(job)
         CareerNextLevel = careerNextLevel,
         CareerProgress = JobPoint,
         CareerTaxi = taxiData,
-        jobs = Config.JobsMenu[jobName],
+        jobs = jobConfig,
         jobRanking = jobRanking,
         isWorking = isCurrentlyWorking,  -- Gửi trạng thái công việc
         selectedMethod = selectedMethod  -- Gửi method đã tìm được từ config

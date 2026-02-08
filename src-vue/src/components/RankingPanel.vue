@@ -61,7 +61,10 @@
           v-for="player in ranking.ranks" 
           :key="player.position"
           class="table-row"
-          :class="{ 'top-rank': player.position <= 3 }"
+          :class="{ 
+            'top-rank': player.position <= 3,
+            'current-player': isCurrentPlayer(player.name)
+          }"
         >
           <div class="col-rank">
             <img 
@@ -120,6 +123,10 @@ const getTopPlayer = (position) => {
 
 const getBadgeImage = (position) => {
   return `./image/top${position}.png`
+}
+
+const isCurrentPlayer = (playerName) => {
+  return playerName === props.ranking.currentPlayerName
 }
 </script>
 
@@ -387,6 +394,27 @@ const getBadgeImage = (position) => {
 
 .table-row:hover {
   background: rgba(254, 205, 8, 0.08);
+}
+
+.table-row.current-player {
+  background: linear-gradient(90deg, 
+    rgba(254, 205, 8, 0.3) 0%, 
+    rgba(254, 205, 8, 0.2) 50%, 
+    rgba(254, 205, 8, 0.3) 100%
+  ) !important;
+  border-left: 3px solid #FECD08;
+  border-right: 3px solid #FECD08;
+  box-shadow: 0 0 15px rgba(254, 205, 8, 0.5);
+}
+
+.table-row.current-player .col-name {
+  color: #FECD08;
+  font-weight: 700;
+}
+
+.table-row.current-player .col-cccd,
+.table-row.current-player .col-phone {
+  color: #FECD08;
 }
 
 .col-rank {

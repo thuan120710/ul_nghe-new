@@ -287,7 +287,10 @@ onMounted(() => {
           requirements: { 
             level: jobConfig.requiredLevel || 1, 
             exp: 0,
-            tools: toolRequirements  // Thêm tool requirements vào đây
+            tools: toolRequirements,  // Thêm tool requirements vào đây
+            // Thêm dữ liệu biến động thị trường từ market
+            marketMoney: jobConfig.home?.market?.money || 0,
+            marketExp: jobConfig.home?.market?.exp || 0
           },
           guide: { 
             title: jobConfig.guide?.title || 'HƯỚNG DẪN', 
@@ -320,11 +323,14 @@ onMounted(() => {
       
       // Map ranking data
       const jobImagePath = jobConfig?.home?.img ? `./image/${jobConfig.home.img}` : './image/vesinh.png'
+      const currentPlayerName = `${event.data.firstName || ''} ${event.data.lastName || ''}`.trim()
+      
       if (event.data.jobRanking && Array.isArray(event.data.jobRanking)) {
         rankingData.value = {
           title: 'BẢNG XẾP HẠNG NGHỀ',
           jobImage: jobImagePath,
           videoUrl: './image/Comp1.mp4',
+          currentPlayerName: currentPlayerName,  // Thêm tên người chơi hiện tại
           ranks: event.data.jobRanking.map((player, index) => ({
             position: index + 1,
             name: player.name || 'Unknown',
@@ -338,6 +344,7 @@ onMounted(() => {
           title: 'BẢNG XẾP HẠNG NGHỀ',
           jobImage: jobImagePath,
           videoUrl: './image/Comp1.mp4',
+          currentPlayerName: currentPlayerName,  // Thêm tên người chơi hiện tại
           ranks: []
         }
       }

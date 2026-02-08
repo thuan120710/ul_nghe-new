@@ -32,8 +32,12 @@
       <!-- Requirements Info - Chỉ hiển thị khi CHƯA làm việc -->
       <div v-if="!job.isWorking" class="requirements-header">
         <span class="req-label">Biến động thị trường</span>
-        <span class="req-badge level-badge">Level {{ job.requirements?.level || 1 }}</span>
-        <span class="req-badge exp-badge">EXP {{ job.requirements?.exp || 0 }}</span>
+        <span class="req-badge" :class="marketMoneyPercent >= 0 ? 'money-positive' : 'money-negative'">
+          IC {{ marketMoneyPercent >= 0 ? '+' : '' }}{{ marketMoneyPercent }}%
+        </span>
+        <span class="req-badge" :class="marketExpPercent >= 0 ? 'exp-positive' : 'exp-negative'">
+          EXP {{ marketExpPercent >= 0 ? '+' : '' }}{{ marketExpPercent }}%
+        </span>
       </div>
 
       <!-- Three Stars Row - Chỉ hiển thị khi CHƯA làm việc -->
@@ -223,6 +227,25 @@ const levelPercentage = computed(() => {
   const playerLevel = props.job.skills?.playerLevel || 1
   const requiredLevel = props.job.skills?.requiredLevel || 1
   return Math.min((playerLevel / requiredLevel) * 100, 100)
+})
+
+// Tính phần trăm biến động IC (tiền)
+// Dữ liệu đã là % từ f17_biendong, không cần tính toán
+const marketMoneyPercent = computed(() => {
+  const marketMoney = props.job.requirements?.marketMoney
+  if (marketMoney === undefined || marketMoney === null) return 0
+  
+  // marketMoney đã là % biến động từ f17_biendong (ví dụ: 14, -10)
+  return Math.round(marketMoney)
+})
+
+// Tính phần trăm biến động EXP
+const marketExpPercent = computed(() => {
+  const marketExp = props.job.requirements?.marketExp
+  if (marketExp === undefined || marketExp === null) return 0
+  
+  // marketExp đã là % biến động từ f17_biendong (ví dụ: 14, -10)
+  return Math.round(marketExp)
 })
 
 // Tính số sao cho Thu nhập (Money) - từ 0-5 sao
@@ -463,6 +486,74 @@ const handleMethodSelect = (option) => {
   white-space: nowrap;
 }
 
+.money-positive {
+  border: 1px solid #00CC66;
+  color: #4CBA6F;
+  text-align: center;
+  font-family: "Baloo 2";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  display: flex;
+  padding: 0rem 0.625rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  height: 20px;
+}
+
+.money-negative {
+  border: 1px solid #FF0066;
+  color: #ED2449;
+  text-align: center;
+  font-family: "Baloo 2";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  display: flex;
+  padding: 0rem 0.625rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  height: 20px;
+}
+
+.exp-positive {
+  border: 1px solid #00CC66;
+  color: #4CBA6F;
+  text-align: center;
+  font-family: "Baloo 2";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  display: flex;
+  padding: 0rem 0.625rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  height: 20px;
+}
+
+.exp-negative {
+  border: 1px solid #FF0066;
+  color: #ED2449;
+  text-align: center;
+  font-family: "Baloo 2";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  display: flex;
+  padding: 0rem 0.625rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  height: 20px;
+}
+
 .level-badge {
   border: 1px solid #00CC66 ;
 
@@ -526,6 +617,13 @@ const handleMethodSelect = (option) => {
   flex-direction: column;
   align-items: center;
   gap: 6px;
+}
+
+.divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 10px;
 }
 
 .star-label {

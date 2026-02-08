@@ -26,7 +26,6 @@ local function GetTTVLStats(jobName)
             }
         }
     else
-        print(string.format("^1[ERROR] GetTTVLStats(%s): Failed to get stats^7", jobName))
         -- Fallback nếu không tìm thấy trong TTVL
         return {
             money = { current = 0, target = 60 },
@@ -43,10 +42,8 @@ local function GetTTVLRewards(jobName)
     end)
     
     if success and rewards then
-        print(string.format("^2[DEBUG] GetTTVLRewards(%s): Found %d rewards^7", jobName, #rewards))
         return rewards
     else
-        print(string.format("^1[ERROR] GetTTVLRewards(%s): Failed to get rewards^7", jobName))
         return {}
     end
 end
@@ -58,10 +55,8 @@ local function GetTTVLRequirements(jobName)
     end)
     
     if success and requirements then
-        print(string.format("^2[DEBUG] GetTTVLRequirements(%s): Found %d requirements^7", jobName, #requirements))
         return requirements
     else
-        print(string.format("^1[ERROR] GetTTVLRequirements(%s): Failed to get requirements^7", jobName))
         return {}
     end
 end
