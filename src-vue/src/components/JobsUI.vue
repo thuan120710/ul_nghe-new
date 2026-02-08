@@ -56,7 +56,7 @@ defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo'])
   height: 924px;
   flex-shrink: 0;
   border-radius: 1.25rem;
-  background: rgba(0, 0, 0, 0.30);
+  background: rgba(93, 93, 95, 0.50);
   box-shadow: -4px -4px 4px 0 #2D2D2D inset, 2px 2px 4px 0 #797979 inset;
 }
 

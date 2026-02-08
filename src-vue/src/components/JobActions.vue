@@ -702,17 +702,6 @@ const handleMethodSelect = (option) => {
   align-items: center;
 }
 
-.exp-bar,
-.level-bar {
-  width: 407px;
-  height: 16px;
-  background: #3A393C;
-  border-radius: 50px ;
-  overflow: hidden;
-  position: relative;
-  border: 2px solid #1A1A1C;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-}
 
 .exp-progress,
 .level-progress {
@@ -722,7 +711,6 @@ const handleMethodSelect = (option) => {
   height: 100%;
   background: linear-gradient(90deg, #FECD08 0%, #FFD93D 100%);
   transition: width 0.5s ease;
-  border-radius: 50px;
 }
 
 .skill-level-badge {
@@ -755,7 +743,6 @@ const handleMethodSelect = (option) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
 }
 
 .exp-value,
@@ -809,10 +796,10 @@ const handleMethodSelect = (option) => {
 .exp-bar {
   position: relative;
   width: 100%;
-  height: 24px;
-  background: #3A393C;
+  height: 1.2rem;
   overflow: hidden;
-  margin-bottom: 5px;
+  border-radius: 3.125rem;
+  background: var(--Grey-2, #3A393C);
 }
 
 .exp-progress {
@@ -827,10 +814,10 @@ const handleMethodSelect = (option) => {
 .level-bar {
   position: relative;
   width: 100%;
-  height: 24px;
-  background: #3A393C;
+  height: 1.2rem;
   overflow: hidden;
-  margin-bottom: 5px;
+  border-radius: 3.125rem;
+  background: var(--Grey-2, #3A393C);
 }
 
 .level-progress {

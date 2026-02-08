@@ -9,10 +9,12 @@
         <iframe
           v-if="embedUrl"
           :src="embedUrl"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          style="width:100%;height:100%;border:none;"
+          allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
           allowfullscreen
           class="video-player"
+          @load="handleIframeLoad"
+          @error="handleIframeError"
         ></iframe>
         <div v-else class="error-message">
           URL video không hợp lệ
@@ -40,7 +42,12 @@ const emit = defineEmits(['close'])
 
 // Chuyển đổi YouTube URL sang embed URL
 const embedUrl = computed(() => {
-  if (!props.videoUrl) return ''
+  console.log('🎥 VideoModal - Input videoUrl:', props.videoUrl)
+  
+  if (!props.videoUrl) {
+    console.warn('⚠️ VideoModal - No videoUrl provided')
+    return ''
+  }
   
   // Xử lý các dạng URL YouTube khác nhau
   let videoId = ''
@@ -49,25 +56,45 @@ const embedUrl = computed(() => {
   if (props.videoUrl.includes('youtube.com/watch')) {
     const urlParams = new URLSearchParams(props.videoUrl.split('?')[1])
     videoId = urlParams.get('v')
+    console.log('🎥 Detected youtube.com/watch format, videoId:', videoId)
   }
   // Dạng: https://youtu.be/VIDEO_ID
   else if (props.videoUrl.includes('youtu.be/')) {
     videoId = props.videoUrl.split('youtu.be/')[1].split('?')[0]
+    console.log('🎥 Detected youtu.be format, videoId:', videoId)
   }
   // Dạng: https://www.youtube.com/embed/VIDEO_ID
   else if (props.videoUrl.includes('youtube.com/embed/')) {
     videoId = props.videoUrl.split('embed/')[1].split('?')[0]
+    console.log('🎥 Detected youtube.com/embed format, videoId:', videoId)
+  }
+  // Dạng: Chỉ có VIDEO_ID
+  else if (props.videoUrl && !props.videoUrl.includes('http')) {
+    videoId = props.videoUrl
+    console.log('🎥 Detected plain videoId format:', videoId)
   }
   
   if (videoId) {
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`
+    // Sử dụng domain gốc youtube.com (KHÔNG dùng youtube-nocookie)
+    const finalUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&playsinline=1`
+    console.log('✅ Final embed URL:', finalUrl)
+    return finalUrl
   }
   
+  console.error('❌ Could not extract videoId from URL:', props.videoUrl)
   return ''
 })
 
 const handleClose = () => {
   emit('close')
+}
+
+const handleIframeLoad = () => {
+  console.log('✅ Iframe loaded successfully')
+}
+
+const handleIframeError = (error) => {
+  console.error('❌ Iframe failed to load:', error)
 }
 </script>
 
@@ -159,7 +186,7 @@ const handleClose = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  border: none;
 }
 
 .error-message {

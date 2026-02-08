@@ -71,7 +71,7 @@ defineEmits(['watchVideo'])
   background: rgba(0, 0, 0, 0.50);
   border: 2px solid #FECD08;
   border-radius: 8px;
-  padding: 20px;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -80,9 +80,8 @@ defineEmits(['watchVideo'])
 
 .job-image {
   position: relative;
-  width: 426px;
-  height: 167.44px;
-  border-radius: 6px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -93,11 +92,10 @@ defineEmits(['watchVideo'])
 }
 
 .job-description {
-  width: 426px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: 255px;
+  gap: 6px;
+  max-height: 245px;
 }
 
 .section-title {
@@ -218,7 +216,6 @@ defineEmits(['watchVideo'])
 }
 
 .guide-section {
-  width: 426px;
   border-radius: 6px;
   display: flex;
   flex-direction: column;

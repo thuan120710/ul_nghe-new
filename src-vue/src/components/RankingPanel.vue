@@ -48,6 +48,15 @@
       </div>
 
       <div class="table-body">
+        <!-- Overlay khi chưa có dữ liệu -->
+        <div v-if="!ranking.ranks || ranking.ranks.length === 0" class="no-data-overlay">
+          <div class="no-data-content">
+            <div class="no-data-icon">📊</div>
+            <div class="no-data-text">Thông tin sẽ sớm cập nhật</div>
+          </div>
+        </div>
+
+        <!-- Dữ liệu bảng xếp hạng -->
         <div 
           v-for="player in ranking.ranks" 
           :key="player.position"
@@ -456,5 +465,60 @@ const getBadgeImage = (position) => {
 
 .table-body::-webkit-scrollbar-thumb:hover {
   background: #FFD93D;
+}
+
+/* No Data Overlay */
+.no-data-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 10;
+}
+
+.no-data-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: rgba(58, 57, 60, 0.9);
+  border: 2px solid #FECD08;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.no-data-icon {
+  font-size: 3rem;
+  animation: pulse-icon 2s infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.no-data-text {
+  color: #FECD08;
+  text-align: center;
+  font-family: "Baloo 2";
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 </style>

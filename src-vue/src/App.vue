@@ -159,9 +159,14 @@ const handleUpgradeSkill = () => {
 }
 
 const handleWatchVideo = () => {
+  console.log('🎬 Watch video clicked')
+  console.log('🎬 Current jobData.videoUrl:', jobData.value.videoUrl)
   if (jobData.value.videoUrl) {
     currentVideoUrl.value = jobData.value.videoUrl
     showVideoModal.value = true
+    console.log('🎬 Video modal opened with URL:', currentVideoUrl.value)
+  } else {
+    console.error('❌ No video URL available')
   }
 }
 
@@ -218,6 +223,10 @@ onMounted(() => {
         if (jobConfig.guide?.videoID) {
           // Nếu có videoID trong config, tạo URL YouTube
           videoUrl = `https://www.youtube.com/watch?v=${jobConfig.guide.videoID}`
+          console.log('📹 Video ID from config:', jobConfig.guide.videoID)
+          console.log('📹 Generated video URL:', videoUrl)
+        } else {
+          console.warn('⚠️ No videoID found in config.guide')
         }
         
         // Tính toán level yêu cầu dựa trên cấp độ nghề hiện tại
