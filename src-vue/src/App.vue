@@ -302,6 +302,11 @@ onMounted(() => {
             maxLevel: jobConfig.maxLevel || 1,
             description: jobConfig.careerLevel?.name ? `Nâng cấp nghề ${jobConfig.careerLevel.name} để mở khóa thêm nhiều tính năng và tăng thu nhập.` : ''
           },
+          process: jobConfig.home?.process || {
+            money: { current: 0, target: 60 },
+            exp: { current: 0, target: 200 },
+            active: { current: 0, target: 20 }
+          },  // Thêm process stats từ config
           rewards: rewards,  // Thêm rewards từ config
           hasLevel: jobConfig.hasLevel || false,
           acceptJob: jobConfig.acceptJob,

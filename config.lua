@@ -4,10 +4,29 @@ Config = {}
 
 -- Helper function để lấy stats từ f17-ttvl
 local function GetTTVLStats(jobName)
-    local stats = exports['f17-ttvl']:GetJobStats(jobName)
-    if stats then
-        return stats
+    local success, stats = pcall(function()
+        return exports['f17-ttvl']:GetJobStats(jobName)
+    end)
+    
+    if success and stats then
+        -- Chuyển đổi từ format TTVL sang format UI
+        -- TTVL format: stats[1].taskProgress = tiền, stats[2].taskProgress = exp, stats[3].taskProgress = active
+        return {
+            money = { 
+                current = stats.money.current or 0, 
+                target = stats.money.target or 60 
+            },
+            exp = { 
+                current = stats.exp.current or 0, 
+                target = stats.exp.target or 200 
+            },
+            active = { 
+                current = stats.active.current or 0, 
+                target = stats.active.target or 20 
+            }
+        }
     else
+        print(string.format("^1[ERROR] GetTTVLStats(%s): Failed to get stats^7", jobName))
         -- Fallback nếu không tìm thấy trong TTVL
         return {
             money = { current = 0, target = 60 },

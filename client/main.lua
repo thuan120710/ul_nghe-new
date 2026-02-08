@@ -11,6 +11,9 @@ local function openMenu(job)
     PlayerData = QBCore.Functions.GetPlayerData()
     jobName = job
     
+    -- Ẩn HUD khi mở UI
+    exports['f17-hudv2']:toggleHud(false)
+    
     local taxiData = nil
     if jobName and jobName ~= 'taxi' then
         if Config.JobsMenu[jobName].hasLevel then
@@ -81,6 +84,8 @@ end)
 
 RegisterNUICallback('closeMenu', function(data, cb)
 	SetNuiFocus(false, false)
+	-- Hiện lại HUD khi đóng UI
+	exports['f17-hudv2']:toggleHud(true)
 end)
 
 RegisterNUICallback('acceptJob', function(data, cb)

@@ -44,7 +44,7 @@
             <img src="/image/iconquygiatoc.png" alt="Thu nhập" class="label-icon" />
           </div>
           <div class="difficulty-stars">
-            <svg v-for="i in 5" :key="i" class="star" :class="{ active: i <= 3 }" xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
+            <svg v-for="i in 5" :key="i" class="star" :class="{ active: i <= moneyStars }" xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
               <path d="M6.50195 0.5C6.51697 0.5 6.53189 0.504581 6.54395 0.511719L6.56641 0.533203L8.30273 3.82422L8.41992 4.04688L8.66895 4.08594L12.4443 4.66504L12.4463 4.66602C12.4784 4.6709 12.4934 4.6892 12.498 4.70312C12.5006 4.71063 12.5002 4.71665 12.499 4.72168L12.4873 4.74121L9.78418 7.35547L9.5957 7.53711L9.6377 7.79492L10.2354 11.4434V11.4443C10.2366 11.4523 10.2358 11.4592 10.2334 11.4648C10.2309 11.4706 10.226 11.4781 10.2158 11.4854C10.192 11.5021 10.1576 11.504 10.1338 11.4922H10.1328L6.72266 9.81641L6.50195 9.70801L6.28125 9.81641L2.87012 11.4912C2.84208 11.5048 2.80924 11.5016 2.78613 11.4854C2.76766 11.4722 2.76402 11.4552 2.76562 11.4453L3.36133 7.79492L3.40332 7.53711L3.21582 7.35547L0.513672 4.74219C0.506223 4.73441 0.502534 4.72675 0.500977 4.7207C0.499443 4.71452 0.500046 4.70879 0.501953 4.70312C0.506091 4.69085 0.522385 4.67093 0.554688 4.66602V4.66504L4.33301 4.08594L4.58203 4.04688L4.69922 3.8252L6.4375 0.532227L6.43848 0.533203C6.44198 0.526716 6.44902 0.518775 6.46094 0.511719C6.47293 0.504622 6.48702 0.500037 6.50195 0.5Z" stroke="#FECD08"/>
             </svg>
           </div>
@@ -56,7 +56,7 @@
             <img src="/image/iconlevelgiatoc.png" alt="EXP" class="label-icon" />
           </div>
           <div class="difficulty-stars">
-            <svg v-for="i in 5" :key="i" class="star" :class="{ active: i <= 2 }" xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
+            <svg v-for="i in 5" :key="i" class="star" :class="{ active: i <= expStars }" xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
               <path d="M6.50195 0.5C6.51697 0.5 6.53189 0.504581 6.54395 0.511719L6.56641 0.533203L8.30273 3.82422L8.41992 4.04688L8.66895 4.08594L12.4443 4.66504L12.4463 4.66602C12.4784 4.6709 12.4934 4.6892 12.498 4.70312C12.5006 4.71063 12.5002 4.71665 12.499 4.72168L12.4873 4.74121L9.78418 7.35547L9.5957 7.53711L9.6377 7.79492L10.2354 11.4434V11.4443C10.2366 11.4523 10.2358 11.4592 10.2334 11.4648C10.2309 11.4706 10.226 11.4781 10.2158 11.4854C10.192 11.5021 10.1576 11.504 10.1338 11.4922H10.1328L6.72266 9.81641L6.50195 9.70801L6.28125 9.81641L2.87012 11.4912C2.84208 11.5048 2.80924 11.5016 2.78613 11.4854C2.76766 11.4722 2.76402 11.4552 2.76562 11.4453L3.36133 7.79492L3.40332 7.53711L3.21582 7.35547L0.513672 4.74219C0.506223 4.73441 0.502534 4.72675 0.500977 4.7207C0.499443 4.71452 0.500046 4.70879 0.501953 4.70312C0.506091 4.69085 0.522385 4.67093 0.554688 4.66602V4.66504L4.33301 4.08594L4.58203 4.04688L4.69922 3.8252L6.4375 0.532227L6.43848 0.533203C6.44198 0.526716 6.44902 0.518775 6.46094 0.511719C6.47293 0.504622 6.48702 0.500037 6.50195 0.5Z" stroke="#FECD08"/>
             </svg>
           </div>
@@ -68,7 +68,7 @@
             <img src="/image/tocdo.png" alt="Độ khó" class="label-icon" />
           </div>
           <div class="difficulty-stars">
-            <svg v-for="i in 5" :key="i" class="star" :class="{ active: i <= 5 }" xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
+            <svg v-for="i in 5" :key="i" class="star" :class="{ active: i <= activeStars }" xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
               <path d="M6.50195 0.5C6.51697 0.5 6.53189 0.504581 6.54395 0.511719L6.56641 0.533203L8.30273 3.82422L8.41992 4.04688L8.66895 4.08594L12.4443 4.66504L12.4463 4.66602C12.4784 4.6709 12.4934 4.6892 12.498 4.70312C12.5006 4.71063 12.5002 4.71665 12.499 4.72168L12.4873 4.74121L9.78418 7.35547L9.5957 7.53711L9.6377 7.79492L10.2354 11.4434V11.4443C10.2366 11.4523 10.2358 11.4592 10.2334 11.4648C10.2309 11.4706 10.226 11.4781 10.2158 11.4854C10.192 11.5021 10.1576 11.504 10.1338 11.4922H10.1328L6.72266 9.81641L6.50195 9.70801L6.28125 9.81641L2.87012 11.4912C2.84208 11.5048 2.80924 11.5016 2.78613 11.4854C2.76766 11.4722 2.76402 11.4552 2.76562 11.4453L3.36133 7.79492L3.40332 7.53711L3.21582 7.35547L0.513672 4.74219C0.506223 4.73441 0.502534 4.72675 0.500977 4.7207C0.499443 4.71452 0.500046 4.70879 0.501953 4.70312C0.506091 4.69085 0.522385 4.67093 0.554688 4.66602V4.66504L4.33301 4.08594L4.58203 4.04688L4.69922 3.8252L6.4375 0.532227L6.43848 0.533203C6.44198 0.526716 6.44902 0.518775 6.46094 0.511719C6.47293 0.504622 6.48702 0.500037 6.50195 0.5Z" stroke="#FECD08"/>
             </svg>
           </div>
@@ -223,6 +223,46 @@ const levelPercentage = computed(() => {
   const playerLevel = props.job.skills?.playerLevel || 1
   const requiredLevel = props.job.skills?.requiredLevel || 1
   return Math.min((playerLevel / requiredLevel) * 100, 100)
+})
+
+// Tính số sao cho Thu nhập (Money) - từ 0-5 sao
+const moneyStars = computed(() => {
+  const process = props.job.process
+  if (!process || !process.money) return 0
+  
+  const current = process.money.current || 0
+  const target = process.money.target || 60
+  const percentage = (current / target) * 100
+  
+  // Chuyển đổi phần trăm thành số sao (0-5)
+  // 0-20% = 1 sao, 20-40% = 2 sao, 40-60% = 3 sao, 60-80% = 4 sao, 80-100% = 5 sao
+  return Math.ceil(percentage / 20) || 0
+})
+
+// Tính số sao cho EXP - từ 0-5 sao
+const expStars = computed(() => {
+  const process = props.job.process
+  if (!process || !process.exp) return 0
+  
+  const current = process.exp.current || 0
+  const target = process.exp.target || 200
+  const percentage = (current / target) * 100
+  
+  // Chuyển đổi phần trăm thành số sao (0-5)
+  return Math.ceil(percentage / 20) || 0
+})
+
+// Tính số sao cho Độ chủ động (Active) - từ 0-5 sao
+const activeStars = computed(() => {
+  const process = props.job.process
+  if (!process || !process.active) return 0
+  
+  const current = process.active.current || 0
+  const target = process.active.target || 20
+  const percentage = (current / target) * 100
+  
+  // Chuyển đổi phần trăm thành số sao (0-5)
+  return Math.ceil(percentage / 20) || 0
 })
 
 // Kiểm tra xem nghề có methodBtn không
