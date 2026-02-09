@@ -99,7 +99,43 @@
     </div>
 
     <!-- Bottom Section: Skill Level & Upgrade (luôn hiển thị) -->
-    <div class="job-upgrade-section">
+    <!-- UI mới cho nghề không có upgrade -->
+    <div v-if="!job.hasLevel || !job.upgradeJob || !job.upgradeJob.eventname" class="job-upgrade-section no-upgrade">
+      <!-- Background Video -->
+      <video 
+        class="background-video" 
+        autoplay 
+        loop 
+        muted 
+        playsinline
+      >
+        <source src="/image/capdo.mp4" type="video/mp4">
+      </video>
+
+      <!-- Content -->
+      <div class="no-upgrade-content">
+        <!-- Khối 1: Cấp độ nghề hiện tại + TỐI ĐA -->
+        <div class="upgrade-block">
+          <div class="no-upgrade-title">Cấp độ nghề hiện tại</div>
+          <div class="level-badge-wrapper">
+            <img src="/image/Frame135.png" alt="Frame" class="badge-frame" />
+            <div class="level-badge-text">TỐI ĐA</div>
+          </div>
+        </div>
+
+        <!-- Khối 2: Tổng điểm tích lũy + Điểm -->
+        <div class="upgrade-block">
+          <div class="points-title">Tổng điểm tích lũy</div>
+          <div class="points-badge-wrapper">
+            <img src="/image/Frame136.png" alt="Frame" class="badge-frame" />
+            <div class="points-badge-text">{{ job.skills?.exp || 0 }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI cũ cho nghề có upgrade -->
+    <div v-else class="job-upgrade-section">
       <!-- Khối 1: Cấp độ nghề hiện tại -->
       <div class="skill-header">
         <span class="section-title">Cấp độ nghề hiện tại</span>
@@ -917,7 +953,7 @@ const handleMethodSelect = (option) => {
   font-family: "Baloo 2";
   font-size: 1rem;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 400;
   line-height: normal;
 }
 
@@ -1075,6 +1111,127 @@ const handleMethodSelect = (option) => {
 .btn-upgrade:disabled:hover {
   background: #3A393C;
   transform: none;
+}
+
+/* Styles cho UI không có upgrade */
+.job-upgrade-section.no-upgrade {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  padding: 2rem;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex: 1 0 0;
+  align-self: stretch;
+  border-radius: 0.625rem;
+  border: 2px solid var(--FECD08, #FECD08);
+}
+
+.background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.no-upgrade-content {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+
+.upgrade-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  align-self: stretch;
+  margin-top: -4px;
+}
+
+.no-upgrade-title {
+  color: #FFF;
+  leading-trim: both;
+  text-edge: cap;
+  font-family: "Baloo 2";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.level-badge-wrapper,
+.points-badge-wrapper {
+  position: relative;
+  display: flex;
+  width: 12.5rem;
+  height: 6.25rem;
+  padding: 0.625rem 1.25rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.badge-frame {
+  position: absolute;
+  object-fit: contain;
+  z-index: 0;
+  display: flex;
+  padding: 0.625rem 1.25rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.level-badge-text {
+  position: relative;
+  color: #000;
+  text-align: center;
+  leading-trim: both;
+  text-edge: cap;
+
+  /* Bold 16 */
+  font-family: "Baloo 2";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.points-title {
+  color: #FFF;
+  leading-trim: both;
+  text-edge: cap;
+  font-family: "Baloo 2";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.points-badge-text {
+  position: relative;
+  color: #000;
+  text-align: center;
+  leading-trim: both;
+  text-edge: cap;
+
+  /* Bold 16 */
+  font-family: "Baloo 2";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 }
 
 </style>
