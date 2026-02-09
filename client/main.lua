@@ -1,8 +1,24 @@
 local jobName = nil
 local LevelJob, JobPoint, careerNextLevel = nil, nil, nil
 local isClickButton = false
-local isCurrentlyWorking = false  -- Theo dõi trạng thái công việc
 local selectedEventName = nil  -- Chỉ lưu eventname để tìm lại trong config
+
+-- Hàm helper để lấy trạng thái công việc từ Player State
+local function isCurrentlyWorking()
+    return LocalPlayer.state.isWorking or false
+end
+
+-- Hàm helper để set trạng thái công việc
+local function setWorkingStatus(status, eventname)
+    LocalPlayer.state:set('isWorking', status, true)
+    if status and eventname then
+        LocalPlayer.state:set('workingEventName', eventname, true)
+        selectedEventName = eventname
+    elseif not status then
+        LocalPlayer.state:set('workingEventName', nil, true)
+        selectedEventName = nil
+    end
+end
 
 local openMenuSpamProtect = 0
 local function openMenu(job)
@@ -13,6 +29,11 @@ local function openMenu(job)
     
     -- Ẩn HUD khi mở UI
     exports['f17-hudv2']:toggleHud(false)
+    
+    -- Khôi phục selectedEventName từ Player State nếu có
+    if LocalPlayer.state.workingEventName then
+        selectedEventName = LocalPlayer.state.workingEventName
+    end
     
     local taxiData = nil
     if jobName and jobName ~= 'taxi' then
@@ -87,7 +108,7 @@ local function openMenu(job)
         CareerTaxi = taxiData,
         jobs = jobConfig,
         jobRanking = jobRanking,
-        isWorking = isCurrentlyWorking,  -- Gửi trạng thái công việc
+        isWorking = isCurrentlyWorking(),  -- Lấy từ Player State
         selectedMethod = selectedMethod  -- Gửi method đã tìm được từ config
     })
 end
@@ -114,16 +135,13 @@ RegisterNUICallback('acceptJob', function(data, cb)
     if isClickButton then return end
     isClickButton = true
     
-    -- Lưu eventname để tìm lại method từ config khi mở menu
-    selectedEventName = data.eventname
-    
     local doi = promise.new()
     TriggerEvent(data.eventname, function(result)
         if result then
-            isCurrentlyWorking = true  -- Bắt đầu thành công
+            setWorkingStatus(true, data.eventname)  -- Lưu vào Player State
             doi:resolve(true)
         else
-            isCurrentlyWorking = true
+            -- Không thay đổi trạng thái khi thất bại
             doi:resolve(false)
         end
     end, data)
@@ -133,8 +151,7 @@ RegisterNUICallback('acceptJob', function(data, cb)
 end)
 
 RegisterNUICallback('cancelJob', function(data, cb)
-    isCurrentlyWorking = false  -- Cập nhật trạng thái khi kết thúc công việc
-    selectedEventName = nil  -- Xóa eventname đã lưu
+    setWorkingStatus(false)  -- Xóa trạng thái từ Player State
     CallTrigger(data.eventname, data.eventtype, data.eventfunction)
     cb(true)
 end)
@@ -208,4 +225,15 @@ RegisterNUICallback('takeMission', function(data, cb)
     local dataNew = { ketqua = ketqua, CareerTaxi = taxiData }
     isClickButton = false
     cb(dataNew)
+end)
+
+
+-- Event để các resource nghề thông báo trạng thái công việc
+RegisterNetEvent('f17-jobs:cl:UpdateWorkingStatus', function(status, eventname)
+    setWorkingStatus(status, eventname)
+end)
+
+-- Export function để các resource nghề có thể cập nhật trạng thái
+exports('UpdateWorkingStatus', function(status, eventname)
+    setWorkingStatus(status, eventname)
 end)
