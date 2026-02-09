@@ -23,6 +23,7 @@
         @startJob="(method) => $emit('startJob', method)"
         @stopJob="$emit('stopJob')"
         @upgradeSkill="$emit('upgradeSkill')"
+        @otherBtn="(btn) => $emit('otherBtn', btn)"
       />
 
       <!-- Right Panel: Ranking -->
@@ -43,7 +44,7 @@ defineProps({
   rankingData: Object
 })
 
-defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo'])
+defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo', 'otherBtn'])
 </script>
 
 <style scoped>

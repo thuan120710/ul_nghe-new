@@ -11,6 +11,7 @@
         @stopJob="handleStopJob"
         @upgradeSkill="handleUpgradeSkill"
         @watchVideo="handleWatchVideo"
+        @otherBtn="handleOtherBtn"
       />
     </div>
     
@@ -110,6 +111,21 @@ const handleStartJob = (selectedMethod) => {
         if (selectedMethod) {
           jobData.value.selectedMethod = selectedMethod
         }
+      } else {
+        // Nếu thất bại, check lại trạng thái từ Lua để đảm bảo UI đúng
+        setTimeout(() => {
+          fetch(`https://${GetParentResourceName()}/checkWorkingStatus`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          }).then(response => response.json())
+            .then(statusResult => {
+              if (statusResult && statusResult.isWorking !== undefined) {
+                isWorking.value = statusResult.isWorking
+                jobData.value.isWorking = statusResult.isWorking
+              }
+            })
+        }, 100)
       }
       // Nếu result === false, không làm gì cả (giữ nguyên trạng thái)
     })
@@ -118,20 +134,30 @@ const handleStartJob = (selectedMethod) => {
 const handleStopJob = () => {
   const jobConfig = jobData.value
   if (jobConfig.cancelJob) {
+    const payload = {
+      eventname: jobConfig.cancelJob.eventname,
+      eventtype: jobConfig.cancelJob.eventtype,
+      shouldEndJob: true  // Đánh dấu là kết thúc công việc
+    }
+    
+    // Chỉ thêm eventfunction nếu có
+    if (jobConfig.cancelJob.eventfunction) {
+      payload.eventfunction = jobConfig.cancelJob.eventfunction
+    }
+    
     fetch(`https://${GetParentResourceName()}/cancelJob`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        eventname: jobConfig.cancelJob.eventname,
-        eventtype: jobConfig.cancelJob.eventtype,
-        eventfunction: jobConfig.cancelJob.eventfunction
+      body: JSON.stringify(payload)
+    }).then(response => response.json())
+      .then(result => {
+        if (result === true) {
+          isWorking.value = false
+          jobData.value.isWorking = false
+          // Xóa option đã chọn khi kết thúc công việc
+          jobData.value.selectedMethod = null
+        }
       })
-    }).then(() => {
-      isWorking.value = false
-      jobData.value.isWorking = false
-      // Xóa option đã chọn khi kết thúc công việc
-      jobData.value.selectedMethod = null
-    })
   }
 }
 
@@ -158,20 +184,57 @@ const handleUpgradeSkill = () => {
 }
 
 const handleWatchVideo = () => {
-  console.log('🎬 Watch video clicked')
-  console.log('🎬 Current jobData.videoUrl:', jobData.value.videoUrl)
   if (jobData.value.videoUrl) {
     currentVideoUrl.value = jobData.value.videoUrl
     showVideoModal.value = true
-    console.log('🎬 Video modal opened with URL:', currentVideoUrl.value)
-  } else {
-    console.error('❌ No video URL available')
   }
 }
 
 const handleCloseVideo = () => {
   showVideoModal.value = false
   currentVideoUrl.value = ''
+}
+
+// Hàm xử lý khi bấm otherbtn - gọi cancelJob và cập nhật UI dựa trên kết quả
+const handleOtherBtn = (btn) => {
+  // Gọi cancelJob với eventname của button
+  if (btn && btn.eventname) {
+    const payload = {
+      eventname: btn.eventname,      // Event của button
+      eventtype: btn.eventtype        // Type của button
+    }
+    
+    // Chỉ thêm eventfunction nếu có
+    if (btn.eventfunction) {
+      payload.eventfunction = btn.eventfunction
+    }
+    
+    fetch(`https://${GetParentResourceName()}/cancelJob`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(() => {
+      // Sau khi gọi cancelJob, check lại trạng thái từ Lua
+      // Đợi một chút để Lua xử lý xong
+      setTimeout(() => {
+        fetch(`https://${GetParentResourceName()}/checkWorkingStatus`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        }).then(response => response.json())
+          .then(result => {
+            // Cập nhật UI dựa trên trạng thái từ Lua
+            if (result && result.isWorking !== undefined) {
+              isWorking.value = result.isWorking
+              jobData.value.isWorking = result.isWorking
+              if (!result.isWorking) {
+                jobData.value.selectedMethod = null
+              }
+            }
+          })
+      }, 100)
+    })
+  }
 }
 
 const GetParentResourceName = () => {
@@ -222,10 +285,6 @@ onMounted(() => {
         if (jobConfig.guide?.videoID) {
           // Nếu có videoID trong config, tạo URL YouTube
           videoUrl = `https://www.youtube.com/watch?v=${jobConfig.guide.videoID}`
-          console.log('📹 Video ID from config:', jobConfig.guide.videoID)
-          console.log('📹 Generated video URL:', videoUrl)
-        } else {
-          console.warn('⚠️ No videoID found in config.guide')
         }
         
         // Tính toán level yêu cầu dựa trên cấp độ nghề hiện tại

@@ -646,7 +646,6 @@ Config.JobsMenu = {
     upgradeJob = {},
     button = {
       methodbtn = {},
-      levelbtn = {},
       otherbtn = {
         {
           buttonname = 'Taxi tự do',
@@ -716,7 +715,7 @@ Config.JobsMenu = {
     },
     button = {
       methodbtn = {
-        solo = {
+        {
           buttonname = 'Cá nhân',
           eventname = 'f17_lansanho:cl:DoJobCaNhan',
           eventtype = 'client',
@@ -724,16 +723,15 @@ Config.JobsMenu = {
             canhan = true 
           }
         },
-      teamwork = {
+        {
           buttonname = 'Tổ đội',
           eventname = 'f17_lansanho:cl:DoJobToDoi',
           eventtype = 'client',
           eventfunction = { 
             todoi = true 
           }
-        },
+        }
       },
-      levelbtn = {},
       otherbtn = {
         {
           buttonname = 'Nhận thưởng',
@@ -884,8 +882,7 @@ Config.JobsMenu = {
       eventtype = 'client'
     },
     button = {
-      methodbtn = {},
-      levelbtn = {
+      methodbtn = {
         {
           buttonname = 'Cấp độ 1',
           eventname = 'f17_sanban:cl:DoJob',
@@ -973,8 +970,7 @@ Config.JobsMenu = {
       eventtype = 'client'
     },
     button = {
-      methodbtn = {},
-      levelbtn = {
+      methodbtn = {
         {
           buttonname = 'Dễ ($5000)',
           eventname = 'f17_lankhobau:cl:DoJob',

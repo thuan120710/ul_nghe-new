@@ -79,10 +79,16 @@
         </div>
       </div>
 
-      <!-- Selected Method Display - Hiển thị khi đang làm việc -->
-      <div v-if="job.isWorking && job.selectedMethod" class="selected-method-container">
-        <button class="selected-method-button">
-          {{ job.selectedMethod.buttonname }}
+      <!-- Other Buttons - Hiển thị khi đang làm việc và có otherbtn -->
+      <div v-if="job.isWorking && hasOtherBtn" class="other-buttons-container" :class="{ 'vertical-layout': otherBtnCount >= 3 }">
+        <button 
+          v-for="(btn, index) in job.button.otherbtn" 
+          :key="index"
+          class="other-button"
+          :class="{ 'wide-button': otherBtnCount >= 3 }"
+          @click="handleOtherBtnClick(btn)"
+        >
+          {{ btn.buttonname }}
         </button>
       </div>
 
@@ -204,7 +210,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['startJob', 'stopJob', 'upgradeSkill'])
+const emit = defineEmits(['startJob', 'stopJob', 'upgradeSkill', 'otherBtnClick'])
 
 const showMethodPopup = ref(false)
 
@@ -347,6 +353,23 @@ const handleMethodSelect = (option) => {
   showMethodPopup.value = false
   // Emit event với thông tin method được chọn
   emit('startJob', option)
+}
+
+// Kiểm tra xem nghề có otherBtn không
+const hasOtherBtn = computed(() => {
+  const otherBtn = props.job.button?.otherbtn
+  return otherBtn && Array.isArray(otherBtn) && otherBtn.length > 0
+})
+
+// Đếm số lượng otherbtn
+const otherBtnCount = computed(() => {
+  const otherBtn = props.job.button?.otherbtn
+  return otherBtn && Array.isArray(otherBtn) ? otherBtn.length : 0
+})
+
+// Xử lý khi bấm nút otherbtn - chỉ gọi event của button
+const handleOtherBtnClick = (btn) => {
+  emit('otherBtn', btn)
 }
 </script>
 
@@ -708,34 +731,61 @@ const handleMethodSelect = (option) => {
   fill: #FECD08;
 }
 
-.selected-method-container {
+.other-buttons-container {
   width: 407px;
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-bottom: 20px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  margin-bottom: 10px;
 }
 
-.selected-method-button {
-  background: rgba(255, 255, 255, 0.95);
+/* Layout dọc khi có 3+ options */
+.other-buttons-container.vertical-layout {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+}
+
+.other-button {
   border: none;
   border-radius: 0.625rem;
   color: #000;
   font-family: "Baloo 2";
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
-  cursor: default;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   display: flex;
-  padding: 0.5rem 0.625rem;
+  padding: 0.6rem 1.5rem;
   justify-content: center;
   align-items: center;
   gap: 0.625rem;
-  align-self: stretch;
-  border-radius: 0.625rem;
   background: var(--White, #FFF);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
+  flex: 1;
+  white-space: nowrap;
+}
+
+/* Nút dài ra khi có 3+ options */
+.other-button.wide-button {
+  width: 100%;
+  flex: unset;
+  padding: 0.6rem 0.625rem;
+}
+
+.other-button:hover {
+  background: #FECD08;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(254, 205, 8, 0.5);
+}
+
+.other-button:active {
+  transform: translateY(-1px);
 }
 
 .btn-start-job {

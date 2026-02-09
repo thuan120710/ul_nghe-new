@@ -1,24 +1,6 @@
 local jobName = nil
 local LevelJob, JobPoint, careerNextLevel = nil, nil, nil
 local isClickButton = false
-local selectedEventName = nil  -- Chỉ lưu eventname để tìm lại trong config
-
--- Hàm helper để lấy trạng thái công việc từ Player State
-local function isCurrentlyWorking()
-    return LocalPlayer.state.isWorking or false
-end
-
--- Hàm helper để set trạng thái công việc
-local function setWorkingStatus(status, eventname)
-    LocalPlayer.state:set('isWorking', status, true)
-    if status and eventname then
-        LocalPlayer.state:set('workingEventName', eventname, true)
-        selectedEventName = eventname
-    elseif not status then
-        LocalPlayer.state:set('workingEventName', nil, true)
-        selectedEventName = nil
-    end
-end
 
 local openMenuSpamProtect = 0
 local function openMenu(job)
@@ -26,14 +8,6 @@ local function openMenu(job)
     openMenuSpamProtect = GetGameTimer() + 1000
     PlayerData = QBCore.Functions.GetPlayerData()
     jobName = job
-    
-    -- Ẩn HUD khi mở UI
-    exports['f17-hudv2']:toggleHud(false)
-    
-    -- Khôi phục selectedEventName từ Player State nếu có
-    if LocalPlayer.state.workingEventName then
-        selectedEventName = LocalPlayer.state.workingEventName
-    end
     
     local taxiData = nil
     if jobName and jobName ~= 'taxi' then
@@ -62,39 +36,6 @@ local function openMenu(job)
 
     local jobRanking = lib.callback.await('f17_leaderboard:sv:getJobRanking', false, jobName)
 
-    -- Tìm selectedMethod từ config dựa vào eventname đã lưu
-    local selectedMethod = nil
-    if selectedEventName and Config.JobsMenu[jobName].button and Config.JobsMenu[jobName].button.methodbtn then
-        for key, method in pairs(Config.JobsMenu[jobName].button.methodbtn) do
-            if method.eventname == selectedEventName then
-                selectedMethod = method
-                break
-            end
-        end
-    end
-
-    -- Map tên job từ backupulnghe sang f17_biendong
-    local jobNameMapping = {
-        ['food'] = 'grabfood',
-        ['ngheauto'] = 'ngheauto'  -- Nếu có mapping khác thêm vào đây
-    }
-    local bdvlJobName = jobNameMapping[jobName] or jobName
-
-    -- Lấy market data từ GlobalState
-    local marketData = { money = 0, exp = 0 }
-    if GlobalState.BDVL and GlobalState.BDVL.vieclam and GlobalState.BDVL.vieclam[bdvlJobName] then
-        marketData = {
-            money = GlobalState.BDVL.vieclam[bdvlJobName].price or 0,
-            exp = GlobalState.BDVL.vieclam[bdvlJobName].xp or 0
-        }
-    end
-
-    -- Clone job config và cập nhật market data
-    local jobConfig = json.decode(json.encode(Config.JobsMenu[jobName]))
-    if jobConfig.home then
-        jobConfig.home.market = marketData
-    end
-
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = 'show',
@@ -106,10 +47,8 @@ local function openMenu(job)
         CareerNextLevel = careerNextLevel,
         CareerProgress = JobPoint,
         CareerTaxi = taxiData,
-        jobs = jobConfig,
-        jobRanking = jobRanking,
-        isWorking = isCurrentlyWorking(),  -- Lấy từ Player State
-        selectedMethod = selectedMethod  -- Gửi method đã tìm được từ config
+        jobs = Config.JobsMenu[jobName],
+        jobRanking = jobRanking
     })
 end
 
@@ -127,21 +66,16 @@ end)
 
 RegisterNUICallback('closeMenu', function(data, cb)
 	SetNuiFocus(false, false)
-	-- Hiện lại HUD khi đóng UI
-	exports['f17-hudv2']:toggleHud(true)
 end)
 
 RegisterNUICallback('acceptJob', function(data, cb)
     if isClickButton then return end
     isClickButton = true
-    
     local doi = promise.new()
     TriggerEvent(data.eventname, function(result)
         if result then
-            setWorkingStatus(true, data.eventname)  -- Lưu vào Player State
             doi:resolve(true)
         else
-            -- Không thay đổi trạng thái khi thất bại
             doi:resolve(false)
         end
     end, data)
@@ -151,7 +85,6 @@ RegisterNUICallback('acceptJob', function(data, cb)
 end)
 
 RegisterNUICallback('cancelJob', function(data, cb)
-    setWorkingStatus(false)  -- Xóa trạng thái từ Player State
     CallTrigger(data.eventname, data.eventtype, data.eventfunction)
     cb(true)
 end)
@@ -225,15 +158,4 @@ RegisterNUICallback('takeMission', function(data, cb)
     local dataNew = { ketqua = ketqua, CareerTaxi = taxiData }
     isClickButton = false
     cb(dataNew)
-end)
-
-
--- Event để các resource nghề thông báo trạng thái công việc
-RegisterNetEvent('f17-jobs:cl:UpdateWorkingStatus', function(status, eventname)
-    setWorkingStatus(status, eventname)
-end)
-
--- Export function để các resource nghề có thể cập nhật trạng thái
-exports('UpdateWorkingStatus', function(status, eventname)
-    setWorkingStatus(status, eventname)
 end)
