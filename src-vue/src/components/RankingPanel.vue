@@ -47,7 +47,7 @@
         <div class="col-phone">Tích lũy nghề</div>
       </div>
 
-      <div class="table-body">
+      <div class="table-body" :class="{ 'player-in-top10': currentPlayerRank > 0 && currentPlayerRank <= 10 }">
         <!-- Overlay khi chưa có dữ liệu -->
         <div v-if="!ranking.ranks || ranking.ranks.length === 0" class="no-data-overlay">
           <div class="no-data-content">
@@ -154,13 +154,9 @@ const currentPlayerData = computed(() => {
 const displayedRanks = computed(() => {
   if (!props.ranking.ranks) return []
   
-  // Nếu player ở hạng 11+, chỉ hiển thị top 10 (player đã được thêm vào cuối array từ App.vue)
-  if (currentPlayerRank.value > 10) {
-    return props.ranking.ranks.slice(0, 10)
-  }
-  
-  // Ngược lại hiển thị tất cả (player trong top 10 hoặc không có rank)
-  return props.ranking.ranks
+  // Luôn hiển thị tất cả ranks (không cắt bớt)
+  // Nếu player nằm ngoài top 10, sẽ có hàng riêng ở dưới
+  return props.ranking.ranks.filter(p => p.position <= 10)
 })
 </script>
 
@@ -179,7 +175,7 @@ const displayedRanks = computed(() => {
 .top-section {
   position: relative;
   width: 100%;
-  height: 384px;
+  height: 300px;
   border-radius: 0;
   overflow: hidden;
   padding: 20px;
@@ -213,7 +209,6 @@ const displayedRanks = computed(() => {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .panel-header {
@@ -221,7 +216,7 @@ const displayedRanks = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 15px 0;
+  /* padding: 15px 0; */
 }
 
 .title {
@@ -241,14 +236,14 @@ const displayedRanks = computed(() => {
   display: flex;
   justify-content: space-around;
   align-items: flex-end;
-  gap: 15px;
+  /* gap: 15px; */
 }
 
 .badge-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 25px;
   transition: transform 0.3s;
 }
 
@@ -359,7 +354,6 @@ const displayedRanks = computed(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .table-header {
@@ -398,6 +392,11 @@ const displayedRanks = computed(() => {
   position: relative;
 }
 
+/* Khi player nằm trong top 10, tăng padding để vừa không gian (chỉ 10 hàng) */
+.table-body.player-in-top10 .table-row {
+  padding: 0.33rem 0.625rem;
+}
+
 .table-row {
   display: grid;
   grid-template-columns: 80px 1fr 100px 100px;
@@ -411,7 +410,7 @@ const displayedRanks = computed(() => {
   font-style: normal;
   line-height: 0.875rem; /* 100% */
 
-  padding: 0.3125rem 0.625rem;
+  padding: 0.2125rem 0.625rem;
   justify-content: center;
   align-items: center;
   gap: 0.625rem;
@@ -430,19 +429,21 @@ const displayedRanks = computed(() => {
   background: rgba(254, 205, 8, 0.08);
 }
 
+/* Style cho player trong top 10 */
 .table-row.current-player {
-    box-shadow: 0 0 15px #fecd0880;
-    border: 2px solid#FECD08;
+  background: linear-gradient(90deg, #FECD08 0%, #FFD93D 50%, #FECD08 100%) !important;
+  border: 2px solid #FFB800;
+  box-shadow: 0 0 20px rgba(254, 205, 8, 0.6);
+  animation: glow-pulse 2s infinite;
 }
 
-.table-row.current-player .col-name {
-  color: #FECD08;
-  font-weight: 700;
-}
-
+.table-row.current-player .col-name,
 .table-row.current-player .col-cccd,
-.table-row.current-player .col-phone {
-  color: #FECD08;
+.table-row.current-player .col-phone,
+.table-row.current-player .rank-number {
+  color: #000;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 /* Style cho player nằm ngoài top 10 */

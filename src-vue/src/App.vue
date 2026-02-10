@@ -419,7 +419,7 @@ onMounted(() => {
           const playerRankData = {
             position: rankingPer.pos,
             name: currentPlayerName,
-            level:'N/A', // Sẽ cần lấy từ PlayerData nếu có
+            level: rankingPer.cid || 'N/A', // Lấy CCCD từ rankingPer
             phone: rankingPer.count || 0
           }
           worldRanks.push(playerRankData)
@@ -457,8 +457,15 @@ onMounted(() => {
 
   // ESC key to close
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isVisible.value) {
-      handleClose()
+    if (e.key === 'Escape') {
+      // Nếu VideoModal đang mở, chỉ đóng VideoModal
+      if (showVideoModal.value) {
+        handleCloseVideo()
+      } 
+      // Nếu không, đóng UI chính
+      else if (isVisible.value) {
+        handleClose()
+      }
     }
   })
 })
