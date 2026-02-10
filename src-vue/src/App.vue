@@ -334,8 +334,8 @@ onMounted(() => {
           }
         }
         
-        console.log('🔧 Tool Requirements:', toolRequirements)
-        console.log('🎁 Rewards:', rewards)
+        // console.log('🔧 Tool Requirements:', toolRequirements)
+        // console.log('🎁 Rewards:', rewards)
         
         jobData.value = {
           name: jobConfig.name || '',
@@ -384,29 +384,72 @@ onMounted(() => {
       const jobImagePath = jobConfig?.home?.img ? `./image/${jobConfig.home.img}` : './image/vesinh.png'
       const currentPlayerName = `${event.data.firstName || ''} ${event.data.lastName || ''}`.trim()
       
-      if (event.data.jobRanking && Array.isArray(event.data.jobRanking)) {
+      console.log('📊 ===== RANKING DATA DEBUG =====')
+      console.log('📊 Raw jobRanking from Lua:', event.data.jobRanking)
+      console.log('📊 Raw perRanking from Lua:', event.data.perRanking)
+      console.log('📊 jobRanking type:', typeof event.data.jobRanking)
+      console.log('📊 jobRanking stringified:', JSON.stringify(event.data.jobRanking, null, 2))
+      console.log('📊 perRanking stringified:', JSON.stringify(event.data.perRanking, null, 2))
+      console.log('📊 Current Player Name:', currentPlayerName)
+      
+      // Xử lý dữ liệu ranking - data đã được tách sẵn từ Lua
+      let rankingWorld = event.data.jobRanking || []
+      let rankingPer = event.data.perRanking || null
+      
+      console.log('📊 Ranking World:', rankingWorld)
+      console.log('📊 Ranking Per:', rankingPer)
+      
+      if (rankingWorld.length > 0) {
+        const worldRanks = rankingWorld.map((player) => ({
+          position: player.pos,
+          name: player.name || 'Unknown',
+          level: player.cid || 'N/A',
+          phone: player.count || 0
+        }))
+        
+        console.log('📊 World Ranks Mapped:', worldRanks)
+        console.log('📊 Total Players in World:', worldRanks.length)
+        
+        // Nếu player không có trong top 10 và có thông tin per, thêm vào cuối danh sách
+        const playerInTop10 = worldRanks.find(p => p.name === currentPlayerName)
+        console.log('📊 Player in Top 10?', !!playerInTop10)
+        
+        if (!playerInTop10 && rankingPer && rankingPer.pos > 10) {
+          // Player nằm ngoài top 10, thêm thông tin player vào
+          const playerRankData = {
+            position: rankingPer.pos,
+            name: currentPlayerName,
+            level:'N/A', // Sẽ cần lấy từ PlayerData nếu có
+            phone: rankingPer.count || 0
+          }
+          worldRanks.push(playerRankData)
+          console.log('📊 Added player to ranks (outside top 10):', playerRankData)
+        }
+        
         rankingData.value = {
           title: 'BẢNG XẾP HẠNG NGHỀ',
           jobImage: jobImagePath,
           videoUrl: './image/Comp1.mp4',
-          currentPlayerName: currentPlayerName,  // Thêm tên người chơi hiện tại
-          ranks: event.data.jobRanking.map((player, index) => ({
-            position: index + 1,
-            name: player.name || 'Unknown',
-            level: player.cid || 'N/A',
-            phone: player.count || 0
-          }))
+          currentPlayerName: currentPlayerName,
+          ranks: worldRanks
         }
+        
+        console.log('📊 Final rankingData.value:', rankingData.value)
+        console.log('📊 Final ranks count:', worldRanks.length)
       } else {
+        console.log('📊 No ranking data or invalid structure - using empty ranks')
+        
         // Default empty ranking
         rankingData.value = {
           title: 'BẢNG XẾP HẠNG NGHỀ',
           jobImage: jobImagePath,
           videoUrl: './image/Comp1.mp4',
-          currentPlayerName: currentPlayerName,  // Thêm tên người chơi hiện tại
+          currentPlayerName: currentPlayerName,
           ranks: []
         }
       }
+      
+      console.log('📊 ===== END RANKING DATA DEBUG =====')
     } else if (action === 'hideUI') {
       isVisible.value = false
     }

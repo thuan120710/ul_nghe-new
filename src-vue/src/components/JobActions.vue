@@ -216,7 +216,7 @@ const showMethodPopup = ref(false)
 
 // Handler khi ảnh load thành công
 const handleImageLoad = (event) => {
-  console.log('✅ Image loaded successfully:', event.target.src)
+  // console.log('✅ Image loaded successfully:', event.target.src)
 }
 
 // Handler khi ảnh load thất bại
@@ -244,7 +244,7 @@ const getToolImage = computed(() => {
     const baseName = toolImage.replace('.png', '')
     // Tạo tên file theo pattern: baseName + level + .png
     const leveledImage = `./image/${baseName}${currentLevel}.png`
-    console.log('Job:', props.job.name, 'Level:', currentLevel, 'Image:', leveledImage)
+    // console.log('Job:', props.job.name, 'Level:', currentLevel, 'Image:', leveledImage)
     return leveledImage
   }
   

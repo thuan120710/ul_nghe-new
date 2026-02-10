@@ -35,6 +35,7 @@ local function openMenu(job)
     end
 
     local jobRanking = lib.callback.await('f17_leaderboard:sv:getJobRanking', false, jobName)
+    print('jobRanking', json.encode(jobRanking))
 
     SetNuiFocus(true, true)
     SendNUIMessage({
@@ -48,7 +49,8 @@ local function openMenu(job)
         CareerProgress = JobPoint,
         CareerTaxi = taxiData,
         jobs = Config.JobsMenu[jobName],
-        jobRanking = jobRanking
+        jobRanking = jobRanking.world,
+        perRanking = jobRanking.per
     })
 end
 

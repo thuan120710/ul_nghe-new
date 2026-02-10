@@ -58,12 +58,12 @@
 
         <!-- Dữ liệu bảng xếp hạng -->
         <div 
-          v-for="player in ranking.ranks" 
+          v-for="player in displayedRanks" 
           :key="player.position"
           class="table-row"
           :class="{ 
             'top-rank': player.position <= 3,
-            'current-player': isCurrentPlayer(player.name)
+            'current-player': isCurrentPlayer(player.name) && currentPlayerRank <= 10
           }"
         >
           <div class="col-rank">
@@ -78,6 +78,19 @@
           <div class="col-name">{{ player.name }}</div>
           <div class="col-cccd">{{ player.level }}</div>
           <div class="col-phone">{{ player.phone }}</div>
+        </div>
+
+        <!-- Hàng riêng cho player nếu hạng 11 trở đi -->
+        <div 
+          v-if="currentPlayerRank > 10 && currentPlayerData"
+          class="table-row current-player-outside-top10"
+        >
+          <div class="col-rank">
+            <span class="rank-number">{{ currentPlayerData.position }}</span>
+          </div>
+          <div class="col-name">{{ currentPlayerData.name }}</div>
+          <div class="col-cccd">{{ currentPlayerData.level }}</div>
+          <div class="col-phone">{{ currentPlayerData.phone }}</div>
         </div>
       </div>
     </div>
@@ -94,6 +107,8 @@ const props = defineProps({
   }
 })
 
+
+
 // Video source - sử dụng đường dẫn từ public folder
 const videoSrc = './image/Comp1.mp4'
 const videoRef = ref(null)
@@ -101,19 +116,12 @@ const videoError = ref(false)
 
 onMounted(() => {
   if (videoRef.value) {
-    videoRef.value.addEventListener('error', (e) => {
-      console.error('Video load error:', e)
+    videoRef.value.addEventListener('error', () => {
       videoError.value = true
     })
     
-    videoRef.value.addEventListener('loadeddata', () => {
-      console.log('Video loaded successfully')
-    })
-    
     // Force play video
-    videoRef.value.play().catch(err => {
-      console.error('Video play error:', err)
-    })
+    videoRef.value.play().catch(() => {})
   }
 })
 
@@ -128,6 +136,32 @@ const getBadgeImage = (position) => {
 const isCurrentPlayer = (playerName) => {
   return playerName === props.ranking.currentPlayerName
 }
+
+// Tính toán hạng của player hiện tại
+const currentPlayerRank = computed(() => {
+  if (!props.ranking.ranks || !props.ranking.currentPlayerName) return 0
+  const player = props.ranking.ranks.find(p => p.name === props.ranking.currentPlayerName)
+  return player ? player.position : 0
+})
+
+// Lấy dữ liệu player hiện tại
+const currentPlayerData = computed(() => {
+  if (!props.ranking.ranks || !props.ranking.currentPlayerName) return null
+  return props.ranking.ranks.find(p => p.name === props.ranking.currentPlayerName)
+})
+
+// Danh sách hiển thị
+const displayedRanks = computed(() => {
+  if (!props.ranking.ranks) return []
+  
+  // Nếu player ở hạng 11+, chỉ hiển thị top 10 (player đã được thêm vào cuối array từ App.vue)
+  if (currentPlayerRank.value > 10) {
+    return props.ranking.ranks.slice(0, 10)
+  }
+  
+  // Ngược lại hiển thị tất cả (player trong top 10 hoặc không có rank)
+  return props.ranking.ranks
+})
 </script>
 
 <style scoped>
@@ -397,14 +431,8 @@ const isCurrentPlayer = (playerName) => {
 }
 
 .table-row.current-player {
-  background: linear-gradient(90deg, 
-    rgba(254, 205, 8, 0.3) 0%, 
-    rgba(254, 205, 8, 0.2) 50%, 
-    rgba(254, 205, 8, 0.3) 100%
-  ) !important;
-  border-left: 3px solid #FECD08;
-  border-right: 3px solid #FECD08;
-  box-shadow: 0 0 15px rgba(254, 205, 8, 0.5);
+    box-shadow: 0 0 15px #fecd0880;
+    border: 2px solid#FECD08;
 }
 
 .table-row.current-player .col-name {
@@ -415,6 +443,36 @@ const isCurrentPlayer = (playerName) => {
 .table-row.current-player .col-cccd,
 .table-row.current-player .col-phone {
   color: #FECD08;
+}
+
+/* Style cho player nằm ngoài top 10 */
+.table-row.current-player-outside-top10 {
+  background: linear-gradient(90deg, #FECD08 0%, #FFD93D 50%, #FECD08 100%) !important;
+  border: 2px solid #FFB800;
+  box-shadow: 0 0 20px rgba(254, 205, 8, 0.6);
+  margin-top: 8px;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  animation: glow-pulse 2s infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(254, 205, 8, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(254, 205, 8, 0.9);
+  }
+}
+
+.table-row.current-player-outside-top10 .col-name,
+.table-row.current-player-outside-top10 .col-cccd,
+.table-row.current-player-outside-top10 .col-phone,
+.table-row.current-player-outside-top10 .rank-number {
+  color: #000;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .col-rank {

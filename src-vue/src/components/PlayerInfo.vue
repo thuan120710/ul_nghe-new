@@ -24,6 +24,7 @@ defineProps({
   display: flex;
   align-items: center;
   gap: 12px;
+  padding-top: 20px;
 }
 
 .avatar {

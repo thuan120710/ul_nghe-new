@@ -42,7 +42,7 @@ const emit = defineEmits(['close'])
 
 // Chuyển đổi YouTube URL sang embed URL
 const embedUrl = computed(() => {
-  console.log('🎥 VideoModal - Input videoUrl:', props.videoUrl)
+  // console.log('🎥 VideoModal - Input videoUrl:', props.videoUrl)
   
   if (!props.videoUrl) {
     console.warn('⚠️ VideoModal - No videoUrl provided')
@@ -56,28 +56,28 @@ const embedUrl = computed(() => {
   if (props.videoUrl.includes('youtube.com/watch')) {
     const urlParams = new URLSearchParams(props.videoUrl.split('?')[1])
     videoId = urlParams.get('v')
-    console.log('🎥 Detected youtube.com/watch format, videoId:', videoId)
+    // console.log('🎥 Detected youtube.com/watch format, videoId:', videoId)
   }
   // Dạng: https://youtu.be/VIDEO_ID
   else if (props.videoUrl.includes('youtu.be/')) {
     videoId = props.videoUrl.split('youtu.be/')[1].split('?')[0]
-    console.log('🎥 Detected youtu.be format, videoId:', videoId)
+    // console.log('🎥 Detected youtu.be format, videoId:', videoId)
   }
   // Dạng: https://www.youtube.com/embed/VIDEO_ID
   else if (props.videoUrl.includes('youtube.com/embed/')) {
     videoId = props.videoUrl.split('embed/')[1].split('?')[0]
-    console.log('🎥 Detected youtube.com/embed format, videoId:', videoId)
+    // console.log('🎥 Detected youtube.com/embed format, videoId:', videoId)
   }
   // Dạng: Chỉ có VIDEO_ID
   else if (props.videoUrl && !props.videoUrl.includes('http')) {
     videoId = props.videoUrl
-    console.log('🎥 Detected plain videoId format:', videoId)
+    // console.log('🎥 Detected plain videoId format:', videoId)
   }
   
   if (videoId) {
     // Sử dụng domain gốc youtube.com (KHÔNG dùng youtube-nocookie)
     const finalUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&playsinline=1`
-    console.log('✅ Final embed URL:', finalUrl)
+    // console.log('✅ Final embed URL:', finalUrl)
     return finalUrl
   }
   
@@ -90,7 +90,7 @@ const handleClose = () => {
 }
 
 const handleIframeLoad = () => {
-  console.log('✅ Iframe loaded successfully')
+  // console.log('✅ Iframe loaded successfully')
 }
 
 const handleIframeError = (error) => {

@@ -49,15 +49,15 @@ defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo', 'othe
 
 <style scoped>
 .jobs-ui {
-  padding: 20px;
+  padding: 0px 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 3px;
   width: 1541px;
-  height: 924px;
+  height: 900px;
   flex-shrink: 0;
   border-radius: 1.25rem;
-  background: rgba(93, 93, 95, 0.50);
+  background: rgb(93 93 95 / 80%);
   box-shadow: -4px -4px 4px 0 #2D2D2D inset, 2px 2px 4px 0 #797979 inset;
 }
 
@@ -69,8 +69,8 @@ defineEmits(['close', 'startJob', 'stopJob', 'upgradeSkill', 'watchVideo', 'othe
 }
 
 .logo img {
-  height: 70px;
-  padding-right: 150px;
+  height: 90px;
+  padding-right: 145px;
 }
 
 .btn-close {

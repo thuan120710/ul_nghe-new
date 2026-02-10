@@ -66,10 +66,10 @@ const props = defineProps({
 defineEmits(['watchVideo'])
 
 // Debug: Log để kiểm tra dữ liệu
-console.log('JobDetails - job data:', props.job)
-console.log('JobDetails - requirements:', props.job.requirements)
-console.log('JobDetails - requirements.tools:', props.job.requirements?.tools)
-console.log('JobDetails - rewards:', props.job.rewards)
+// console.log('JobDetails - job data:', props.job)
+// console.log('JobDetails - requirements:', props.job.requirements)
+// console.log('JobDetails - requirements.tools:', props.job.requirements?.tools)
+// console.log('JobDetails - rewards:', props.job.rewards)
 
 // Helper functions để lấy đường dẫn icon
 const getRewardIcon = (reward) => {
